@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Doctor Profile - {{ doctor.user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Doctor Profile Header -->
+    <div class="glass-card fade-in mb-3">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <div class="default-avatar" style="background: var(--gradient-medical);">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="status-badge" style="background: var(--success-500);"></div>
+            </div>
+            <div class="profile-info">
+                <h2>Dr. {{ doctor.user.username }}</h2>
+                <p style="margin-bottom: var(--space-sm);">
+                    <i class="fas fa-envelope" style="color: var(--primary-400);"></i>
+                    {{ doctor.user.email }}
+                </p>
+                <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+                    <span class="role" style="background: var(--gradient-medical);">
+                        <i class="fas fa-user-md"></i> Doctor
+                    </span>
+                    <span class="role" style="background: rgba(33,150,243,0.3);">
+                        <i class="fas fa-stethoscope"></i> {{ doctor.specialization.name }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-lg); margin-bottom: var(--space-xl);">
+        <div class="glass-card fade-in text-center" style="animation-delay: 0.1s; padding: var(--space-xl);">
+            <div style="width: 60px; height: 60px; background: var(--gradient-success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-md);">
+                <i class="fas fa-calendar-check" style="font-size: 1.5rem;"></i>
+            </div>
+            <h3 style="font-size: 2rem; margin-bottom: var(--space-xs);">{{ doctor_appointments|length }}</h3>
+            <p style="color: var(--gray-400); margin: 0;">Total Appointments</p>
+        </div>
+        
+        <div class="glass-card fade-in text-center" style="animation-delay: 0.2s; padding: var(--space-xl);">
+            <div style="width: 60px; height: 60px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-md);">
+                <i class="fas fa-clock" style="font-size: 1.5rem;"></i>
+            </div>
+            <h3 style="font-size: 2rem; margin-bottom: var(--space-xs);">{{ availabilities|length }}</h3>
+            <p style="color: var(--gray-400); margin: 0;">Available Slots</p>
+        </div>
+        
+        <div class="glass-card fade-in text-center" style="animation-delay: 0.3s; padding: var(--space-xl);">
+            <div style="width: 60px; height: 60px; background: var(--gradient-medical); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-md);">
+                <i class="fas fa-star" style="font-size: 1.5rem;"></i>
+            </div>
+            <h3 style="font-size: 2rem; margin-bottom: var(--space-xs);">{{ doctor.specialization.name }}</h3>
+            <p style="color: var(--gray-400); margin: 0;">Specialization</p>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="glass-card fade-in mb-3" style="animation-delay: 0.3s;">
+        <h3 style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg);">
+            <i class="fas fa-bolt" style="color: var(--warning-500);"></i>
+            Quick Actions
+        </h3>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'my_availability_add' %}" class="btn btn-success">
+                <i class="fas fa-plus-circle"></i>
+                Add Availability
+            </a>
+            <a href="{% url 'my_availability_list' %}" class="btn btn-primary">
+                <i class="fas fa-calendar-alt"></i>
+                Manage My Schedule
+            </a>
+            {% if user.is_superuser %}
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-tachometer-alt"></i>
+                Admin Dashboard
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- My Availability -->
+    {% if availabilities %}
+    <div class="glass-card fade-in mb-3" style="animation-delay: 0.4s;">
+        <h3 style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg);">
+            <i class="fas fa-calendar-week" style="color: var(--primary-400);"></i>
+            My Working Hours
+            <span style="background: var(--gradient-primary); padding: 2px 10px; border-radius: var(--radius-full); font-size: 0.8rem; margin-left: auto;">
+                {{ availabilities|length }} Slots
+            </span>
+        </h3>
+        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-md);">
+            {% for avail in availabilities %}
+            <div style="background: rgba(255,255,255,0.05); border-radius: var(--radius-md); padding: var(--space-md); border-left: 4px solid var(--primary-500);">
+                <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm);">
+                    <i class="fas fa-calendar-day" style="color: var(--primary-400);"></i>
+                    <strong>{{ avail.day }}</strong>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-sm); color: var(--gray-400);">
+                    <i class="fas fa-clock"></i>
+                    {{ avail.start_time|time:"h:i A" }} - {{ avail.end_time|time:"h:i A" }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="glass-card fade-in mb-3 text-center" style="animation-delay: 0.4s; padding: var(--space-2xl);">
+        <i class="fas fa-calendar-times" style="font-size: 3rem; color: var(--gray-500); margin-bottom: var(--space-lg);"></i>
+        <h3>No Availability Set</h3>
+        <p style="margin-bottom: var(--space-lg); color: var(--gray-400);">You haven't set your working hours yet. Add your availability so patients can book appointments with you.</p>
+        <a href="{% url 'my_availability_add' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-plus-circle"></i>
+            Add Your First Slot
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Patient Appointments -->
+    {% if doctor_appointments %}
+    <div class="glass-card fade-in mb-3" style="animation-delay: 0.5s;">
+        <h3 style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg);">
+            <i class="fas fa-users" style="color: var(--success-500);"></i>
+            Patient Appointments
+            <span style="background: var(--gradient-success); padding: 2px 10px; border-radius: var(--radius-full); font-size: 0.8rem; margin-left: auto;">
+                {{ doctor_appointments|length }} Total
+            </span>
+        </h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-user"></i> Patient</th>
+                        <th><i class="fas fa-envelope"></i> Email</th>
+                        <th><i class="fas fa-calendar"></i> Day</th>
+                        <th><i class="fas fa-clock"></i> Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in doctor_appointments %}
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                                <div style="width: 35px; height: 35px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-user" style="font-size: 0.8rem;"></i>
+                                </div>
+                                {{ appt.patient.username }}
+                            </div>
+                        </td>
+                        <td>{{ appt.patient.email }}</td>
+                        <td>{{ appt.day }}</td>
+                        <td>{{ appt.time|time:"h:i A" }}</td>
+                        <td>
+                            <span style="background: rgba(76,175,80,0.2); color: #81c784; padding: 4px 12px; border-radius: var(--radius-full); font-size: 0.8rem;">
+                                <i class="fas fa-check-circle"></i> Confirmed
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="glass-card fade-in mb-3 text-center" style="animation-delay: 0.5s; padding: var(--space-2xl);">
+        <i class="fas fa-user-clock" style="font-size: 3rem; color: var(--gray-500); margin-bottom: var(--space-lg);"></i>
+        <h3>No Appointments Yet</h3>
+        <p style="color: var(--gray-400);">You don't have any patient appointments scheduled. Make sure to add your availability so patients can book with you!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xl);
+        flex-wrap: wrap;
+    }
+    
+    .profile-avatar {
+        position: relative;
+    }
+    
+    .profile-avatar .default-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+    }
+    
+    .status-badge {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 3px solid var(--dark-800);
+    }
+    
+    .profile-info h2 {
+        margin-bottom: var(--space-sm);
+    }
+    
+    .role {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-xs);
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+{% endblock %}

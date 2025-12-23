@@ -4,25 +4,58 @@ from .models import Profile
 
 def signup_view(request):
     if request.method == "POST":
-        # create user
+        username = request.POST.get("username", "").strip()
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "")
+        
+        # Validation: Check for empty fields
+        if not username or not email or not password:
+            return render(request, "signup.html", {
+                "error": "Username, email, and password are required.",
+                "form_data": request.POST
+            })
+        
+        # Validation: Check if username already exists
+        if User.objects.filter(username=username).exists():
+            return render(request, "signup.html", {
+                "error": "This username is already taken. Please choose a different one.",
+                "form_data": request.POST
+            })
+        
+        # Validation: Check if email already exists
+        if User.objects.filter(email=email).exists():
+            return render(request, "signup.html", {
+                "error": "This email is already registered. Please use a different email or login.",
+                "form_data": request.POST
+            })
+        
+        # Validation: Check if national_id already exists
+        national_id = request.POST.get("national_id", "").strip()
+        if Profile.objects.filter(national_id=national_id).exists():
+            return render(request, "signup.html", {
+                "error": "This National ID is already registered.",
+                "form_data": request.POST
+            })
+        
+        # All validations passed - create user
         user = User.objects.create_user(
-            username=request.POST["username"],
-            password=request.POST["password"],
-            email=request.POST["email"]
+            username=username,
+            password=password,
+            email=email
         )
 
         # create profile
         Profile.objects.create(
             user=user,
-            phone=request.POST["phone"],
-            age=request.POST["age"],
-            national_id=request.POST["national_id"],
-            governorate=request.POST["governorate"],
-            city=request.POST["city"],
-            street=request.POST["street"],
-            emergency_name=request.POST["emergency_name"],
-            emergency_phone=request.POST["emergency_phone"],
-            emergency_relation=request.POST["emergency_relation"],
+            phone=request.POST.get("phone", ""),
+            age=request.POST.get("age", 0),
+            national_id=national_id,
+            governorate=request.POST.get("governorate", ""),
+            city=request.POST.get("city", ""),
+            street=request.POST.get("street", ""),
+            emergency_name=request.POST.get("emergency_name", ""),
+            emergency_phone=request.POST.get("emergency_phone", ""),
+            emergency_relation=request.POST.get("emergency_relation", ""),
             image=request.FILES.get("image")
         )
 
@@ -60,12 +93,20 @@ from accounts.models import Profile, Appointment, Doctor
 
 @login_required
 def profile_view(request):
-    # التحقق من وجود Profile للمستخدم
+    # أولاً: نشيك لو الـ User ده دكتور
+    try:
+        doctor = Doctor.objects.get(user=request.user)
+        # لو دكتور، نوجهه لصفحة الدكتور
+        return doctor_profile_view(request, doctor)
+    except Doctor.DoesNotExist:
+        pass
+    
+    # ثانياً: لو مش دكتور، يبقى مريض - نشيك على الـ Profile
     try:
         profile = request.user.profile
     except Profile.DoesNotExist:
-        # لو المستخدم admin/staff وملوش profile، نعمل له واحد افتراضي
-        if request.user.is_superuser or request.user.is_staff:
+        # لو Admin/Superuser وملوش profile
+        if request.user.is_superuser:
             profile = Profile.objects.create(
                 user=request.user,
                 phone="N/A",
@@ -79,34 +120,37 @@ def profile_view(request):
                 emergency_relation="N/A"
             )
         else:
-            # لو مستخدم عادي وملوش profile، نحوله للتسجيل
+            # مستخدم عادي وملوش profile
             return redirect("signup")
-
-    doctor_appointments = None
-    patient_appointments = None
-
-    if request.user.is_staff:
-        # لو دكتور، كل المواعيد عنده كدكتور
-        try:
-            doctor = Doctor.objects.get(user=request.user)
-            doctor_appointments = Appointment.objects.filter(doctor=doctor)
-        except Doctor.DoesNotExist:
-            # الـ staff ممكن يكون admin مش دكتور
-            doctor_appointments = None
-        
-        # لو الدكتور عنده حساب مريض، كمان نظهر له مواعيده كمريض
-        patient_appointments = Appointment.objects.filter(patient=request.user)
-
-    else:
-        # لو مريض فقط
-        patient_appointments = Appointment.objects.filter(patient=request.user)
-
+    
+    # جيب مواعيد المريض
+    patient_appointments = Appointment.objects.filter(patient=request.user).select_related('doctor__user', 'doctor__specialization')
+    
     context = {
         "profile": profile,
-        "doctor_appointments": doctor_appointments,
         "patient_appointments": patient_appointments,
+        "is_patient": True,
     }
     return render(request, "profile.html", context)
+
+
+def doctor_profile_view(request, doctor):
+    """صفحة Profile خاصة بالدكتور"""
+    from .models import DoctorAvailability
+    
+    # مواعيد الدكتور (المرضى اللي حاجزين عنده)
+    doctor_appointments = Appointment.objects.filter(doctor=doctor).select_related('patient')
+    
+    # أوقات الدكتور المتاحة
+    availabilities = DoctorAvailability.objects.filter(doctor=doctor)
+    
+    context = {
+        "doctor": doctor,
+        "doctor_appointments": doctor_appointments,
+        "availabilities": availabilities,
+        "is_doctor": True,
+    }
+    return render(request, "doctor_profile.html", context)
 
 
 

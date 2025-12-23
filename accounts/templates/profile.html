@@ -28,10 +28,6 @@
                 <span class="role" style="background: linear-gradient(135deg, #ff6b6b, #ffa726);">
                     <i class="fas fa-crown"></i> Admin
                 </span>
-                {% elif user.is_staff %}
-                <span class="role">
-                    <i class="fas fa-user-md"></i> Doctor
-                </span>
                 {% else %}
                 <span class="role" style="background: var(--gradient-success);">
                     <i class="fas fa-user"></i> Patient
@@ -148,81 +144,15 @@
         </div>
     </div>
 
-    <!-- Doctor Options -->
-    {% if user.is_staff %}
-    <div class="glass-card fade-in mt-3" style="animation-delay: 0.3s;">
-        <h3 style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg);">
-            <i class="fas fa-stethoscope" style="color: var(--primary-400);"></i>
-            Doctor Dashboard
-        </h3>
-        <div class="d-flex gap-2 flex-wrap">
-            <a href="{% url 'my_availability_add' %}" class="btn btn-success">
-                <i class="fas fa-plus-circle"></i>
-                Add Availability
-            </a>
-            <a href="{% url 'my_availability_list' %}" class="btn btn-primary">
-                <i class="fas fa-calendar-alt"></i>
-                View My Schedule
-            </a>
-            {% if user.is_superuser %}
-            <a href="{% url 'admin:index' %}" class="btn btn-secondary">
-                <i class="fas fa-cogs"></i>
-                Admin Dashboard
-            </a>
-            {% endif %}
-        </div>
+    <!-- Book Appointment Button for Patients -->
+    <div class="glass-card fade-in mt-3 text-center" style="animation-delay: 0.3s; padding: var(--space-xl);">
+        <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-calendar-plus"></i>
+            Book New Appointment
+        </a>
     </div>
-    {% endif %}
 
-    <!-- Appointments Section -->
-    {% if doctor_appointments %}
-    <div class="glass-card fade-in mt-3" style="animation-delay: 0.4s;">
-        <h3 style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg);">
-            <i class="fas fa-calendar-check" style="color: var(--success-500);"></i>
-            Appointments (as Doctor)
-            <span
-                style="background: var(--gradient-success); padding: 2px 10px; border-radius: var(--radius-full); font-size: 0.8rem; margin-left: auto;">
-                {{ doctor_appointments|length }} Total
-            </span>
-        </h3>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th><i class="fas fa-user"></i> Patient</th>
-                        <th><i class="fas fa-calendar"></i> Day</th>
-                        <th><i class="fas fa-clock"></i> Time</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for a in doctor_appointments %}
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: var(--space-sm);">
-                                <div
-                                    style="width: 35px; height: 35px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-user" style="font-size: 0.8rem;"></i>
-                                </div>
-                                {{ a.patient.username }}
-                            </div>
-                        </td>
-                        <td>{{ a.day }}</td>
-                        <td>{{ a.time|time:"h:i A" }}</td>
-                        <td>
-                            <span
-                                style="background: rgba(76,175,80,0.2); color: #81c784; padding: 4px 12px; border-radius: var(--radius-full); font-size: 0.8rem;">
-                                <i class="fas fa-check-circle"></i> Confirmed
-                            </span>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    {% endif %}
-
+    <!-- My Appointments -->
     {% if patient_appointments %}
     <div class="glass-card fade-in mt-3" style="animation-delay: 0.5s;">
         <h3 style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg);">
@@ -271,7 +201,7 @@
     </div>
     {% endif %}
 
-    {% if not patient_appointments and not doctor_appointments %}
+    {% if not patient_appointments %}
     <div class="glass-card fade-in mt-3 text-center" style="animation-delay: 0.4s; padding: var(--space-3xl);">
         <i class="fas fa-calendar-times"
             style="font-size: 4rem; color: var(--gray-500); margin-bottom: var(--space-lg);"></i>

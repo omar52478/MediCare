@@ -11,9 +11,19 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ('user', 'specialization')
-    search_fields = ('user__username', 'specialization__name')
+    list_display = ('user', 'specialization', 'get_email')
+    search_fields = ('user__username', 'user__email', 'specialization__name')
     list_filter = ('specialization',)
+    
+    def get_email(self, obj):
+        return obj.user.email
+    get_email.short_description = 'Email'
+    
+    def save_model(self, request, obj, form, change):
+        # تلقائياً نخلي الدكتور staff عشان يقدر يدير مواعيده
+        obj.user.is_staff = True
+        obj.user.save()
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(DoctorAvailability)

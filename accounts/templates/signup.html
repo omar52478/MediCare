@@ -15,6 +15,13 @@
                 <p>Join Medicare Pro for seamless healthcare management</p>
             </div>
 
+            {% if error %}
+            <div class="alert alert-danger" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-lg); display: flex; align-items: center; gap: var(--space-sm);">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ error }}
+            </div>
+            {% endif %}
+
             <form method="post" enctype="multipart/form-data" id="signupForm">
                 {% csrf_token %}
 
@@ -29,7 +36,7 @@
                 <div class="form-group">
                     <label for="username">Username</label>
                     <div class="input-wrapper">
-                        <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                        <input type="text" id="username" name="username" placeholder="Choose a username" value="{{ form_data.username|default:'' }}" required>
                         <i class="fas fa-user input-icon"></i>
                     </div>
                 </div>
@@ -38,7 +45,7 @@
                     <div class="form-group">
                         <label for="email">Email</label>
                         <div class="input-wrapper">
-                            <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                            <input type="email" id="email" name="email" placeholder="your@email.com" value="{{ form_data.email|default:'' }}" required>
                             <i class="fas fa-envelope input-icon"></i>
                         </div>
                     </div>
@@ -60,7 +67,7 @@
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
                         <div class="input-wrapper">
-                            <input type="text" id="phone" name="phone" placeholder="01xxxxxxxxx" required>
+                            <input type="text" id="phone" name="phone" placeholder="01xxxxxxxxx" value="{{ form_data.phone|default:'' }}" required>
                             <i class="fas fa-phone input-icon"></i>
                         </div>
                     </div>
@@ -68,7 +75,7 @@
                     <div class="form-group">
                         <label for="age">Age</label>
                         <div class="input-wrapper">
-                            <input type="number" id="age" name="age" placeholder="Your age" min="1" max="120" required>
+                            <input type="number" id="age" name="age" placeholder="Your age" min="1" max="120" value="{{ form_data.age|default:'' }}" required>
                             <i class="fas fa-birthday-cake input-icon"></i>
                         </div>
                     </div>
@@ -78,7 +85,7 @@
                     <label for="national_id">National ID</label>
                     <div class="input-wrapper">
                         <input type="text" id="national_id" name="national_id" placeholder="14-digit National ID"
-                            maxlength="14" required>
+                            maxlength="14" value="{{ form_data.national_id|default:'' }}" required>
                         <i class="fas fa-id-card input-icon"></i>
                     </div>
                 </div>
@@ -102,7 +109,7 @@
                     <div class="form-group">
                         <label for="governorate">Governorate</label>
                         <div class="input-wrapper">
-                            <input type="text" id="governorate" name="governorate" placeholder="e.g., Cairo" required>
+                            <input type="text" id="governorate" name="governorate" placeholder="e.g., Cairo" value="{{ form_data.governorate|default:'' }}" required>
                             <i class="fas fa-map-marker-alt input-icon"></i>
                         </div>
                     </div>
@@ -110,7 +117,7 @@
                     <div class="form-group">
                         <label for="city">City</label>
                         <div class="input-wrapper">
-                            <input type="text" id="city" name="city" placeholder="e.g., Nasr City" required>
+                            <input type="text" id="city" name="city" placeholder="e.g., Nasr City" value="{{ form_data.city|default:'' }}" required>
                             <i class="fas fa-city input-icon"></i>
                         </div>
                     </div>
@@ -120,7 +127,7 @@
                     <label for="street">Street Address</label>
                     <div class="input-wrapper">
                         <input type="text" id="street" name="street" placeholder="Street name and building number"
-                            required>
+                            value="{{ form_data.street|default:'' }}" required>
                         <i class="fas fa-road input-icon"></i>
                     </div>
                 </div>
@@ -134,7 +141,7 @@
                         <label for="emergency_name">Contact Name</label>
                         <div class="input-wrapper">
                             <input type="text" id="emergency_name" name="emergency_name" placeholder="Full name"
-                                required>
+                                value="{{ form_data.emergency_name|default:'' }}" required>
                             <i class="fas fa-user-friends input-icon"></i>
                         </div>
                     </div>
@@ -143,7 +150,7 @@
                         <label for="emergency_phone">Contact Phone</label>
                         <div class="input-wrapper">
                             <input type="text" id="emergency_phone" name="emergency_phone" placeholder="Phone number"
-                                required>
+                                value="{{ form_data.emergency_phone|default:'' }}" required>
                             <i class="fas fa-phone-alt input-icon"></i>
                         </div>
                     </div>
