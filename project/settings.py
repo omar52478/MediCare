@@ -32,6 +32,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '.onrender.com',
     '.render.com',
+    '.pythonanywhere.com',
+    'omar559.pythonanywhere.com',
 ]
 
 # Add RENDER_EXTERNAL_HOSTNAME to allowed hosts
