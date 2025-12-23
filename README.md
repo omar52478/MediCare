@@ -1,31 +1,49 @@
-# 🏥 Hospital Management System
+# 🏥 MediCare - Hospital Management System
 
-نظام إدارة المستشفى - Django Web Application
-
----
-
-## 📋 وصف المشروع | Project Description
-
-نظام متكامل لإدارة المواعيد في المستشفيات يسمح للمرضى بحجز مواعيد مع الأطباء، وللأطباء بإدارة جداول توافرهم.
-
-A comprehensive hospital appointment management system that allows patients to book appointments with doctors, and doctors to manage their availability schedules.
+A comprehensive Django-based hospital appointment management system that enables patients to book appointments with doctors and allows doctors to manage their availability schedules.
 
 ---
 
-## 🚀 تشغيل المشروع | Running the Project
+## 🚀 Features
 
-### المتطلبات الأساسية | Prerequisites
-- Python 3.10 أو أحدث
-- pip (مدير حزم Python)
+- **Patient Management**: Register, manage profiles, and book appointments
+- **Doctor Management**: Admin can add doctors with specializations
+- **Appointment Booking**: Patients can book available time slots with doctors
+- **Doctor Availability**: Doctors can set their available days and times
+- **Admin Dashboard**: Comprehensive dashboard for managing the entire system
+- **Responsive Design**: Modern UI that works on all devices
 
-### خطوات التشغيل | Setup Steps
+---
 
-#### 1. إنشاء البيئة الافتراضية | Create Virtual Environment
+## 🛠️ Tech Stack
+
+- **Backend**: Django 5.2.9
+- **Database**: SQLite (Development) / PostgreSQL (Production)
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Deployment**: Render
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+- Python 3.10 or higher
+- pip (Python package manager)
+
+### Setup Steps
+
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/omar52478/MediCare.git
+cd MediCare
+```
+
+#### 2. Create Virtual Environment
 ```bash
 python -m venv venv
 ```
 
-#### 2. تفعيل البيئة الافتراضية | Activate Virtual Environment
+#### 3. Activate Virtual Environment
 
 **Windows (PowerShell):**
 ```powershell
@@ -42,184 +60,157 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-#### 3. تثبيت المتطلبات | Install Requirements
+#### 4. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-#### 4. تطبيق التهجيرات | Apply Migrations
+#### 5. Apply Migrations
 ```bash
 python manage.py migrate
 ```
 
-#### 5. إنشاء حساب المدير | Create Admin Account
+#### 6. Create Admin Account
 ```bash
 python manage.py createsuperuser
 ```
-ثم أدخل:
-- **Username:** اسم المستخدم
-- **Email:** البريد الإلكتروني
-- **Password:** كلمة مرور قوية
 
-#### 6. تشغيل السيرفر | Run Development Server
+#### 7. Run Development Server
 ```bash
 python manage.py runserver
 ```
 
-الآن يمكنك فتح المتصفح والذهاب إلى: `http://127.0.0.1:8000`
+Visit: `http://127.0.0.1:8000`
 
 ---
 
-## 🔐 الحسابات والصلاحيات | Accounts & Permissions
+## 🔐 User Roles
 
-### أنواع المستخدمين | User Types
-
-| النوع | طريقة الإنشاء | الصلاحيات |
-|-------|---------------|----------|
-| **Admin (المدير)** | `python manage.py createsuperuser` | صلاحيات كاملة + لوحة تحكم Django + إدارة الأطباء والمرضى |
-| **Doctor (الطبيب)** | يُضاف من لوحة تحكم الأدمن | إدارة جدول التوافر + رؤية مواعيده |
-| **Patient (المريض)** | التسجيل من `/accounts/signup/` | حجز مواعيد + رؤية مواعيده |
-
-### إعداد البيانات الأساسية | Initial Data Setup
-
-بعد إنشاء حساب الأدمن، اتبع الخطوات التالية من لوحة التحكم (`/admin/`):
-
-1. **إضافة التخصصات (Specializations)**:
-   - اذهب إلى `Accounts > Specializations`
-   - أضف التخصصات مثل: `Cardiology`, `Dermatology`, `Pediatrics`
-
-2. **إضافة دكتور جديد**:
-   - أولاً: أنشئ مستخدم جديد من `Authentication > Users` وحدد `is_staff = True`
-   - ثانياً: أنشئ Profile له من `Accounts > Profiles`
-   - ثالثاً: أضفه كدكتور من `Accounts > Doctors` واختر التخصص
-
-3. **إدارة المواعيد**:
-   - الدكاترة يمكنهم إضافة أوقات توافرهم من صفحة `/accounts/my_availability/`
-   - المرضى يحجزون من صفحة `/accounts/book/`
+| Role | Creation Method | Permissions |
+|------|-----------------|-------------|
+| **Admin** | `python manage.py createsuperuser` | Full access, manage doctors & patients |
+| **Doctor** | Added via Admin Dashboard | Manage availability, view appointments |
+| **Patient** | Self-registration at `/accounts/signup/` | Book appointments, view bookings |
 
 ---
 
-## 🔗 الروابط المتاحة | Available URLs
+## 🔗 Available Routes
 
-### الصفحات العامة | Public Pages
-| الرابط | الوصف |
-|--------|-------|
-| `/` | الصفحة الرئيسية |
-| `/accounts/signup/` | تسجيل حساب جديد (للمرضى) |
-| `/accounts/login/` | تسجيل الدخول |
-| `/accounts/about/` | عن المستشفى |
+### Public Pages
+| Route | Description |
+|-------|-------------|
+| `/` | Home page |
+| `/accounts/signup/` | Patient registration |
+| `/accounts/login/` | User login |
+| `/accounts/about/` | About page |
 
-### صفحات المستخدم | User Pages
-| الرابط | الوصف |
-|--------|-------|
-| `/accounts/profile/` | صفحة البروفايل |
-| `/accounts/book/` | حجز موعد (للمرضى) |
-| `/accounts/my_availability/` | جدول توافر الطبيب |
-| `/accounts/dashboard/` | لوحة تحكم الأدمن |
+### User Pages
+| Route | Description |
+|-------|-------------|
+| `/accounts/profile/` | User profile |
+| `/accounts/book/` | Book appointment (Patients) |
+| `/accounts/my_availability/` | Manage availability (Doctors) |
 
-### لوحة التحكم | Admin Panel
-| الرابط | الوصف |
-|--------|-------|
-| `/admin/` | لوحة تحكم Django |
-| `/accounts/dashboard/` | لوحة تحكم مخصصة للأدمن |
-| `/accounts/dashboard/patients/` | إدارة المرضى |
-| `/accounts/dashboard/doctors/` | إدارة الأطباء |
-| `/accounts/dashboard/appointments/` | إدارة المواعيد |
-| `/accounts/dashboard/specializations/` | إدارة التخصصات |
+### Admin Pages
+| Route | Description |
+|-------|-------------|
+| `/admin/` | Django Admin Panel |
+| `/accounts/dashboard/` | Custom Admin Dashboard |
+| `/accounts/dashboard/patients/` | Manage Patients |
+| `/accounts/dashboard/doctors/` | Manage Doctors |
+| `/accounts/dashboard/appointments/` | Manage Appointments |
+| `/accounts/dashboard/specializations/` | Manage Specializations |
 
 ---
 
-## 📂 هيكل المشروع | Project Structure
+## 📂 Project Structure
 
 ```
-Hospital-System/
-├── accounts/                 # التطبيق الرئيسي
-│   ├── migrations/          # ملفات التهجير
-│   ├── templates/           # قوالب HTML
-│   │   ├── admin/          # قوالب لوحة التحكم
-│   │   └── *.html          # القوالب الرئيسية
-│   ├── static/              # ملفات CSS و JavaScript
-│   │   ├── css/
-│   │   └── js/
-│   ├── models.py            # نماذج البيانات
-│   ├── views.py             # الـ Views
-│   └── urls.py              # روابط التطبيق
-├── project/                  # إعدادات المشروع
-│   ├── settings.py          # إعدادات Django
-│   └── urls.py              # الروابط الرئيسية
-├── media/                    # ملفات المستخدمين
-├── db.sqlite3               # قاعدة البيانات
-├── manage.py                # ملف إدارة Django
-├── requirements.txt         # المتطلبات
-└── README.md                # هذا الملف
+MediCare/
+├── accounts/                 # Main application
+│   ├── migrations/          # Database migrations
+│   ├── templates/           # HTML templates
+│   │   ├── admin/          # Admin dashboard templates
+│   │   └── *.html          # Main templates
+│   ├── static/              # CSS & JavaScript files
+│   ├── models.py            # Data models
+│   ├── views.py             # View functions
+│   └── urls.py              # URL routing
+├── project/                  # Project settings
+│   ├── settings.py          # Django settings
+│   └── urls.py              # Main URL configuration
+├── media/                    # User uploaded files
+├── requirements.txt          # Python dependencies
+├── Procfile                  # Render deployment
+├── build.sh                  # Build script
+└── README.md                 # This file
 ```
 
 ---
 
-## 📊 نماذج البيانات | Data Models
+## 📊 Data Models
 
-### Profile (بروفايل المريض)
-- معلومات شخصية (الهاتف، العمر، الصورة)
-- الرقم القومي
-- العنوان (المحافظة، المدينة، الشارع)
-- جهة اتصال للطوارئ
-
-### Doctor (الطبيب)
-- مرتبط بمستخدم Django
-- التخصص الطبي
-
-### Specialization (التخصص)
-- اسم التخصص
-- وصف التخصص
-
-### DoctorAvailability (توافر الطبيب)
-- الطبيب
-- اليوم (السبت - الجمعة)
-- وقت البداية والنهاية
-
-### Appointment (الموعد)
-- المريض
-- الطبيب
-- اليوم والوقت
+| Model | Description |
+|-------|-------------|
+| **Profile** | Patient information (phone, age, address, emergency contact) |
+| **Doctor** | Doctor linked to user with specialization |
+| **Specialization** | Medical specializations |
+| **DoctorAvailability** | Doctor's available days and times |
+| **Appointment** | Booked appointments between patients and doctors |
 
 ---
 
-## 🛠️ أوامر مفيدة | Useful Commands
+## 🚀 Deployment
+
+This project is configured for deployment on Render. See `DEPLOYMENT.md` for detailed instructions.
+
+### Quick Deploy
+1. Push to GitHub
+2. Connect repository to Render
+3. Set environment variables:
+   - `SECRET_KEY`: Generate a secure key
+   - `DEBUG`: `False`
+   - `DATABASE_URL`: PostgreSQL connection string
+
+---
+
+## 🛠️ Useful Commands
 
 ```bash
-# إنشاء ملفات التهجير بعد تعديل الـ Models
+# Create migrations after model changes
 python manage.py makemigrations
 
-# تطبيق التهجيرات
+# Apply migrations
 python manage.py migrate
 
-# إنشاء superuser
+# Create superuser
 python manage.py createsuperuser
 
-# تشغيل السيرفر
+# Run development server
 python manage.py runserver
 
-# فتح Django Shell
-python manage.py shell
+# Collect static files (production)
+python manage.py collectstatic
 ```
 
 ---
 
-## 📝 ملاحظات للإنتاج | Production Notes
+## ⚠️ Production Notes
 
-1. **DEBUG Mode:** غيّر `DEBUG = False` عند النشر
-2. **SECRET_KEY:** استخدم مفتاح سري جديد وآمن
-3. **قاعدة البيانات:** استخدم PostgreSQL أو MySQL بدلاً من SQLite
-4. **ALLOWED_HOSTS:** أضف النطاقات المسموح بها
-
----
-
-## 👨‍💻 المطور | Developer
-
-تم تطوير هذا المشروع كنظام إدارة مستشفى متكامل.
+1. Set `DEBUG = False` in production
+2. Use a secure `SECRET_KEY`
+3. Use PostgreSQL instead of SQLite
+4. Configure `ALLOWED_HOSTS` properly
+5. Enable HTTPS
 
 ---
 
-## 📜 الترخيص | License
+## � License
 
-هذا المشروع للأغراض التعليمية.
+This project is for educational purposes.
+
+---
+
+## 👨‍� Author
+
+Hospital Management System - MediCare
