@@ -59,6 +59,8 @@
                         <span>Home</span>
                     </a>
                 </li>
+                {% if is_patient %}
+                <!-- Patient: Book Appointment -->
                 <li class="nav-item">
                     <a href="{% url 'book_appointment' %}"
                         class="nav-link {% if request.resolver_match.url_name == 'book_appointment' %}active{% endif %}">
@@ -66,6 +68,7 @@
                         <span>Book Appointment</span>
                     </a>
                 </li>
+                {% endif %}
                 <li class="nav-item">
                     <a href="{% url 'profile' %}"
                         class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
@@ -73,7 +76,8 @@
                         <span>Profile</span>
                     </a>
                 </li>
-                {% if user.is_staff %}
+                {% if is_doctor %}
+                <!-- Doctor: My Schedule -->
                 <li class="nav-item">
                     <a href="{% url 'my_availability_list' %}"
                         class="nav-link {% if 'availability' in request.path %}active{% endif %}">

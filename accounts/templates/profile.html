@@ -144,14 +144,17 @@
         </div>
     </div>
 
-    <!-- Book Appointment Button for Patients -->    <!-- Actions -->
+    <!-- Actions based on user role -->
     <div class="glass-card fade-in mt-3" style="animation-delay: 0.3s; padding: var(--space-xl);">
         <div class="d-flex gap-2 flex-wrap justify-center">
+            {% if not user.is_superuser %}
+            <!-- Patient Actions -->
             <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-lg">
                 <i class="fas fa-calendar-plus"></i>
                 Book New Appointment
             </a>
-            {% if user.is_superuser %}
+            {% else %}
+            <!-- Admin Actions -->
             <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary btn-lg">
                 <i class="fas fa-tachometer-alt"></i>
                 Admin Dashboard

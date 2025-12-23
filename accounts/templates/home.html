@@ -13,10 +13,22 @@
             and access your medical records all in one place.
         </p>
         <div class="hero-actions fade-in" style="animation-delay: 0.2s;">
+            {% if is_patient %}
             <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-lg">
                 <i class="fas fa-calendar-plus"></i>
                 Book Appointment
             </a>
+            {% elif is_doctor %}
+            <a href="{% url 'my_availability_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-calendar-alt"></i>
+                Manage Schedule
+            </a>
+            {% elif user.is_superuser %}
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-tachometer-alt"></i>
+                Admin Dashboard
+            </a>
+            {% endif %}
             <a href="{% url 'profile' %}" class="btn btn-secondary btn-lg">
                 <i class="fas fa-user"></i>
                 View Profile
@@ -74,6 +86,8 @@
 <section class="container mt-4">
     <h2 class="text-center mb-3">Quick Actions</h2>
     <div class="features-grid">
+        {% if is_patient %}
+        <!-- Patient Actions -->
         <a href="{% url 'book_appointment' %}" class="feature-card animate-on-scroll" style="text-decoration: none;">
             <div class="icon blue">
                 <i class="fas fa-calendar-alt"></i>
@@ -89,8 +103,10 @@
             <h3>My Appointments</h3>
             <p>View and manage your upcoming appointments</p>
         </a>
+        {% endif %}
 
-        {% if user.is_staff %}
+        {% if is_doctor %}
+        <!-- Doctor Actions -->
         <a href="{% url 'my_availability_list' %}" class="feature-card animate-on-scroll"
             style="text-decoration: none;">
             <div class="icon purple">
@@ -98,6 +114,50 @@
             </div>
             <h3>My Schedule</h3>
             <p>Manage your availability for patient bookings</p>
+        </a>
+
+        <a href="{% url 'my_availability_add' %}" class="feature-card animate-on-scroll"
+            style="text-decoration: none;">
+            <div class="icon green">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+            <h3>Add Availability</h3>
+            <p>Add new time slots for patients to book</p>
+        </a>
+
+        <a href="{% url 'profile' %}" class="feature-card animate-on-scroll" style="text-decoration: none;">
+            <div class="icon blue">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3>My Patients</h3>
+            <p>View patients who booked appointments with you</p>
+        </a>
+        {% endif %}
+
+        {% if user.is_superuser %}
+        <!-- Admin Actions -->
+        <a href="{% url 'admin_dashboard' %}" class="feature-card animate-on-scroll" style="text-decoration: none;">
+            <div class="icon purple">
+                <i class="fas fa-tachometer-alt"></i>
+            </div>
+            <h3>Admin Dashboard</h3>
+            <p>View system statistics and manage data</p>
+        </a>
+
+        <a href="{% url 'admin_patients' %}" class="feature-card animate-on-scroll" style="text-decoration: none;">
+            <div class="icon blue">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3>Manage Patients</h3>
+            <p>View and manage all registered patients</p>
+        </a>
+
+        <a href="{% url 'admin_doctors' %}" class="feature-card animate-on-scroll" style="text-decoration: none;">
+            <div class="icon green">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <h3>Manage Doctors</h3>
+            <p>View and manage all registered doctors</p>
         </a>
         {% endif %}
 

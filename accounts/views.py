@@ -91,6 +91,13 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from accounts.models import Profile, Appointment, Doctor
 
+
+def is_doctor(user):
+    """Check if user is a doctor"""
+    if not user.is_authenticated:
+        return False
+    return Doctor.objects.filter(user=user).exists()
+
 @login_required
 def profile_view(request):
     # أولاً: نشيك لو الـ User ده دكتور
@@ -184,7 +191,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Doctor, DoctorAvailability
 
 @login_required
-@user_passes_test(lambda u: u.is_staff, login_url="login")
+@user_passes_test(is_doctor, login_url="login")
 def my_availability_add(request):
     try:
         doctor = Doctor.objects.get(user=request.user)
@@ -216,7 +223,7 @@ def my_availability_add(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff, login_url="login")
+@user_passes_test(is_doctor, login_url="login")
 def my_availability_list(request):
     try:
         doctor = Doctor.objects.get(user=request.user)
@@ -231,7 +238,7 @@ def my_availability_list(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff, login_url="login")
+@user_passes_test(is_doctor, login_url="login")
 def my_availability_delete(request, availability_id):
     doctor = get_object_or_404(Doctor, user=request.user)
     availability = get_object_or_404(DoctorAvailability, id=availability_id, doctor=doctor)
@@ -241,7 +248,7 @@ def my_availability_delete(request, availability_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff, login_url="login")
+@user_passes_test(is_doctor, login_url="login")
 def my_availability_update(request, availability_id):
     doctor = get_object_or_404(Doctor, user=request.user)
     availability = get_object_or_404(DoctorAvailability, id=availability_id, doctor=doctor)
