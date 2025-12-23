@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ error_title|default:"Error" }} - Hospital System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="glass-card fade-in text-center"
+        style="max-width: 600px; margin: var(--space-3xl) auto; padding: var(--space-3xl);">
+        <i class="fas fa-exclamation-triangle"
+            style="font-size: 5rem; color: var(--danger-500); margin-bottom: var(--space-xl);"></i>
+
+        <h1 style="color: var(--danger-400); margin-bottom: var(--space-lg);">
+            {{ error_title|default:"Something Went Wrong" }}
+        </h1>
+
+        <p style="font-size: 1.2rem; margin-bottom: var(--space-xl); color: var(--gray-300);">
+            {{ error_message|default:"An unexpected error occurred. Please try again later." }}
+        </p>
+
+        <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap;">
+            <a href="{% url 'home' %}" class="btn btn-primary">
+                <i class="fas fa-home"></i> Go Home
+            </a>
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Go Back
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

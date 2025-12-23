@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Specializations - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="admin-page-header fade-in">
+        <div class="header-left">
+            <a href="{% url 'admin_dashboard' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1><i class="fas fa-hospital"></i> Medical Specializations</h1>
+                <p>{{ specializations|length }} active medical departments</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Specializations Grid -->
+    <div class="spec-grid fade-in" style="animation-delay: 0.1s;">
+        {% for spec in specializations %}
+        <div class="spec-card glass-card">
+            <div class="spec-icon-wrapper">
+                <div class="spec-icon">
+                    {% if 'Cardio' in spec.name %}
+                    <i class="fas fa-heart-pulse"></i>
+                    {% elif 'Ortho' in spec.name %}
+                    <i class="fas fa-bone"></i>
+                    {% elif 'Pediatr' in spec.name %}
+                    <i class="fas fa-baby"></i>
+                    {% elif 'Dermat' in spec.name %}
+                    <i class="fas fa-hand-dots"></i>
+                    {% elif 'Ophthal' in spec.name %}
+                    <i class="fas fa-eye"></i>
+                    {% elif 'ENT' in spec.name %}
+                    <i class="fas fa-ear-listen"></i>
+                    {% elif 'Neuro' in spec.name %}
+                    <i class="fas fa-brain"></i>
+                    {% elif 'Psych' in spec.name %}
+                    <i class="fas fa-comments"></i>
+                    {% elif 'Gastro' in spec.name %}
+                    <i class="fas fa-stomach"></i>
+                    {% elif 'Pulmo' in spec.name %}
+                    <i class="fas fa-lungs"></i>
+                    {% elif 'Nephro' in spec.name %}
+                    <i class="fas fa-kidney"></i>
+                    {% elif 'Endocrin' in spec.name %}
+                    <i class="fas fa-droplet"></i>
+                    {% elif 'Oncol' in spec.name %}
+                    <i class="fas fa-ribbon"></i>
+                    {% elif 'Obstet' in spec.name or 'Gynec' in spec.name %}
+                    <i class="fas fa-person-pregnant"></i>
+                    {% elif 'Urol' in spec.name %}
+                    <i class="fas fa-droplet"></i>
+                    {% elif 'Rheumat' in spec.name %}
+                    <i class="fas fa-hand"></i>
+                    {% elif 'Surgery' in spec.name %}
+                    <i class="fas fa-scissors"></i>
+                    {% elif 'Plastic' in spec.name %}
+                    <i class="fas fa-face-smile"></i>
+                    {% elif 'Dent' in spec.name %}
+                    <i class="fas fa-tooth"></i>
+                    {% else %}
+                    <i class="fas fa-stethoscope"></i>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="spec-content">
+                <h3>{{ spec.name }}</h3>
+                <p class="spec-description">{{ spec.description|truncatewords:15 }}</p>
+            </div>
+            <div class="spec-stats">
+                <div class="stat-item">
+                    <div class="stat-value">{{ spec.doctor_count }}</div>
+                    <div class="stat-label">Doctors</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ spec.appointment_count }}</div>
+                    <div class="stat-label">Appointments</div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state glass-card">
+            <i class="fas fa-hospital-xmark"></i>
+            <h3>No specializations found</h3>
+            <p>Add medical specializations to get started</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        padding: var(--space-lg) 0;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+    }
+
+    .back-btn {
+        width: 45px;
+        height: 45px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition-fast);
+    }
+
+    .back-btn:hover {
+        background: var(--primary-500);
+        transform: translateX(-3px);
+    }
+
+    .admin-page-header h1 {
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .admin-page-header h1 i {
+        color: #FF6B35;
+    }
+
+    .admin-page-header p {
+        color: var(--gray-400);
+        margin-top: var(--space-xs);
+    }
+
+    /* Specializations Grid */
+    .spec-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--space-xl);
+    }
+
+    .spec-card {
+        padding: 0;
+        overflow: hidden;
+        transition: var(--transition-normal);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .spec-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .spec-icon-wrapper {
+        background: var(--gradient-medical);
+        padding: var(--space-xl);
+        display: flex;
+        justify-content: center;
+    }
+
+    .spec-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-xl);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+    }
+
+    .spec-content {
+        padding: var(--space-xl);
+        flex: 1;
+    }
+
+    .spec-content h3 {
+        font-size: 1.2rem;
+        margin-bottom: var(--space-sm);
+    }
+
+    .spec-description {
+        color: var(--gray-400);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .spec-stats {
+        padding: var(--space-lg) var(--space-xl);
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--space-xl);
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        /* -webkit-text-fill-color: transparent; */
+        background-clip: text;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-divider {
+        width: 1px;
+        height: 40px;
+        background: var(--glass-border);
+    }
+
+    /* Empty State */
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: var(--space-3xl);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--gray-600);
+        margin-bottom: var(--space-lg);
+    }
+
+    .empty-state h3 {
+        color: var(--gray-400);
+        margin-bottom: var(--space-sm);
+    }
+
+    .empty-state p {
+        color: var(--gray-500);
+    }
+
+    @media (max-width: 768px) {
+        .spec-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

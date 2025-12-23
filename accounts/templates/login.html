@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container fade-in">
+        <div class="glass-card">
+            <div class="form-header">
+                <div class="icon">
+                    <i class="fas fa-user-lock"></i>
+                </div>
+                <h2>Welcome Back!</h2>
+                <p>Sign in to access your healthcare dashboard</p>
+            </div>
+
+            {% if error %}
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="post" id="loginForm">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+            </form>
+
+            <div class="form-divider">
+                <span>New to Medicare Pro?</span>
+            </div>
+
+            <div class="text-center">
+                <a href="{% url 'signup' %}" class="btn btn-outline btn-block">
+                    <i class="fas fa-user-plus"></i>
+                    Create an Account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container mt-4">
+    <div class="features-grid">
+        <div class="feature-card animate-on-scroll">
+            <div class="icon blue">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3>Easy Booking</h3>
+            <p>Book appointments with top doctors in just a few clicks</p>
+        </div>
+
+        <div class="feature-card animate-on-scroll">
+            <div class="icon green">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <h3>Expert Doctors</h3>
+            <p>Access to qualified specialists across all medical fields</p>
+        </div>
+
+        <div class="feature-card animate-on-scroll">
+            <div class="icon purple">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h3>24/7 Access</h3>
+            <p>Manage your health records anytime, anywhere</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Schedule{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-3 fade-in">
+        <h1>
+            <i class="fas fa-calendar-alt" style="color: var(--primary-400);"></i>
+            My Availability Schedule
+        </h1>
+        <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+            Manage your available time slots for patient bookings
+        </p>
+    </div>
+
+    <!-- Add New Button -->
+    <div class="text-center mb-3 fade-in" style="animation-delay: 0.1s;">
+        <a href="{% url 'my_availability_add' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-plus-circle"></i>
+            Add New Availability
+        </a>
+    </div>
+
+    {% if availabilities %}
+    <!-- Availability Grid -->
+    <div class="glass-card fade-in" style="animation-delay: 0.2s;">
+        <h3 style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg);">
+            <i class="fas fa-clock" style="color: var(--accent-400);"></i>
+            Current Schedule
+            <span
+                style="background: var(--gradient-medical); padding: 4px 12px; border-radius: var(--radius-full); font-size: 0.8rem; margin-left: auto;">
+                {{ availabilities|length }} Slots
+            </span>
+        </h3>
+
+        <div class="availability-grid">
+            {% for avail in availabilities %}
+            <div class="availability-item"
+                style="animation: slideUp 0.3s ease forwards; animation-delay: {{ forloop.counter0 }}00ms; opacity: 0;">
+                <div class="day-info">
+                    <div class="day-badge">
+                        {% if avail.day == 'Saturday' %}Sat
+                        {% elif avail.day == 'Sunday' %}Sun
+                        {% elif avail.day == 'Monday' %}Mon
+                        {% elif avail.day == 'Tuesday' %}Tue
+                        {% elif avail.day == 'Wednesday' %}Wed
+                        {% elif avail.day == 'Thursday' %}Thu
+                        {% elif avail.day == 'Friday' %}Fri
+                        {% endif %}
+                    </div>
+                    <div>
+                        <strong style="color: #fff; font-size: 1.1rem;">{{ avail.day }}</strong>
+                        <div class="time-range">
+                            <i class="fas fa-clock"></i>
+                            {{ avail.start_time|time:"h:i A" }} - {{ avail.end_time|time:"h:i A" }}
+                        </div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <a href="{% url 'my_availability_update' avail.id %}" class="btn btn-primary btn-sm" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'my_availability_delete' avail.id %}" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Are you sure you want to delete this availability slot?');"
+                        title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="glass-card fade-in text-center" style="animation-delay: 0.2s; padding: var(--space-3xl);">
+        <i class="fas fa-calendar-xmark"
+            style="font-size: 5rem; color: var(--gray-500); margin-bottom: var(--space-xl);"></i>
+        <h2>No Availability Set</h2>
+        <p style="font-size: 1.1rem; max-width: 500px; margin: 0 auto var(--space-xl);">
+            You haven't added any availability slots yet. Add your available times so patients can book appointments
+            with you.
+        </p>
+        <a href="{% url 'my_availability_add' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-plus-circle"></i>
+            Add Your First Slot
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Tips Section -->
+    <div class="glass-card fade-in mt-3" style="animation-delay: 0.3s;">
+        <h3 style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg);">
+            <i class="fas fa-lightbulb" style="color: var(--warning-500);"></i>
+            Tips for Managing Your Schedule
+        </h3>
+        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-lg);">
+            <div style="display: flex; gap: var(--space-md); align-items: flex-start;">
+                <div
+                    style="width: 40px; height: 40px; background: rgba(33,150,243,0.2); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fas fa-clock" style="color: var(--primary-400);"></i>
+                </div>
+                <div>
+                    <strong style="color: #fff;">Set Realistic Times</strong>
+                    <p style="font-size: 0.9rem; margin: 0;">Choose time slots when you're sure to be available for
+                        consultations.</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: var(--space-md); align-items: flex-start;">
+                <div
+                    style="width: 40px; height: 40px; background: rgba(76,175,80,0.2); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fas fa-sync" style="color: var(--success-500);"></i>
+                </div>
+                <div>
+                    <strong style="color: #fff;">Keep Updated</strong>
+                    <p style="font-size: 0.9rem; margin: 0;">Regularly update your schedule to reflect any changes in
+                        your availability.</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: var(--space-md); align-items: flex-start;">
+                <div
+                    style="width: 40px; height: 40px; background: rgba(255,152,0,0.2); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fas fa-calendar-check" style="color: var(--warning-500);"></i>
+                </div>
+                <div>
+                    <strong style="color: #fff;">Multiple Slots</strong>
+                    <p style="font-size: 0.9rem; margin: 0;">Add multiple time slots across different days to give
+                        patients more options.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

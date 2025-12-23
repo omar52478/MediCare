@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1 class="fade-in">Welcome, {{ request.user.username }}! 👋</h1>
+        <p class="fade-in" style="animation-delay: 0.1s;">
+            Your health is our priority. Manage your appointments, connect with top doctors,
+            and access your medical records all in one place.
+        </p>
+        <div class="hero-actions fade-in" style="animation-delay: 0.2s;">
+            <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-calendar-plus"></i>
+                Book Appointment
+            </a>
+            <a href="{% url 'profile' %}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-user"></i>
+                View Profile
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="container">
+    <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-xl);">
+        <div class="stat-card animate-on-scroll">
+            <div class="stat-icon blue">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <div class="stat-info">
+                <h3 data-counter="{{ doctor_count|default:0 }}">0</h3>
+                <p>Expert Doctors</p>
+            </div>
+        </div>
+
+        <div class="stat-card animate-on-scroll">
+            <div class="stat-icon green">
+                <i class="fas fa-hospital"></i>
+            </div>
+            <div class="stat-info">
+                <h3 data-counter="{{ specialization_count|default:0 }}">0</h3>
+                <p>Specializations</p>
+            </div>
+        </div>
+
+        <div class="stat-card animate-on-scroll">
+            <div class="stat-icon purple">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+                <h3 data-counter="{{ appointment_count|default:0 }}">0</h3>
+                <p>Appointments</p>
+            </div>
+        </div>
+
+        <div class="stat-card animate-on-scroll">
+            <div class="stat-icon orange">
+                <i class="fas fa-smile"></i>
+            </div>
+            <div class="stat-info">
+                <h3 data-counter="{{ patient_count|default:0 }}">0</h3>
+                <p>Registered Patients</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions -->
+<section class="container mt-4">
+    <h2 class="text-center mb-3">Quick Actions</h2>
+    <div class="features-grid">
+        <a href="{% url 'book_appointment' %}" class="feature-card animate-on-scroll" style="text-decoration: none;">
+            <div class="icon blue">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <h3>Book Appointment</h3>
+            <p>Schedule a visit with your preferred doctor</p>
+        </a>
+
+        <a href="{% url 'profile' %}" class="feature-card animate-on-scroll" style="text-decoration: none;">
+            <div class="icon green">
+                <i class="fas fa-file-medical"></i>
+            </div>
+            <h3>My Appointments</h3>
+            <p>View and manage your upcoming appointments</p>
+        </a>
+
+        {% if user.is_staff %}
+        <a href="{% url 'my_availability_list' %}" class="feature-card animate-on-scroll"
+            style="text-decoration: none;">
+            <div class="icon purple">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h3>My Schedule</h3>
+            <p>Manage your availability for patient bookings</p>
+        </a>
+        {% endif %}
+
+        <a href="{% url 'about' %}" class="feature-card animate-on-scroll" style="text-decoration: none;">
+            <div class="icon orange">
+                <i class="fas fa-hospital"></i>
+            </div>
+            <h3>About Us</h3>
+            <p>Learn more about Medicare Pro services</p>
+        </a>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="container mt-4">
+    <div class="glass-card">
+        <h2 class="text-center mb-3">
+            <i class="fas fa-stethoscope" style="color: var(--primary-400);"></i>
+            Our Medical Services
+        </h2>
+        <div class="d-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-lg);">
+            <div class="text-center" style="padding: var(--space-md);">
+                <i class="fas fa-heartbeat"
+                    style="font-size: 2.5rem; color: var(--error-500); margin-bottom: var(--space-md);"></i>
+                <h4 style="color: #fff;">Cardiology</h4>
+                <p style="font-size: 0.9rem;">Heart health specialists</p>
+            </div>
+
+            <div class="text-center" style="padding: var(--space-md);">
+                <i class="fas fa-brain"
+                    style="font-size: 2.5rem; color: var(--primary-400); margin-bottom: var(--space-md);"></i>
+                <h4 style="color: #fff;">Neurology</h4>
+                <p style="font-size: 0.9rem;">Brain & nervous system</p>
+            </div>
+
+            <div class="text-center" style="padding: var(--space-md);">
+                <i class="fas fa-bone"
+                    style="font-size: 2.5rem; color: var(--warning-500); margin-bottom: var(--space-md);"></i>
+                <h4 style="color: #fff;">Orthopedics</h4>
+                <p style="font-size: 0.9rem;">Bone & joint care</p>
+            </div>
+
+            <div class="text-center" style="padding: var(--space-md);">
+                <i class="fas fa-baby"
+                    style="font-size: 2.5rem; color: var(--accent-400); margin-bottom: var(--space-md);"></i>
+                <h4 style="color: #fff;">Pediatrics</h4>
+                <p style="font-size: 0.9rem;">Child healthcare</p>
+            </div>
+
+            <div class="text-center" style="padding: var(--space-md);">
+                <i class="fas fa-tooth" style="font-size: 2.5rem; color: #fff; margin-bottom: var(--space-md);"></i>
+                <h4 style="color: #fff;">Dental</h4>
+                <p style="font-size: 0.9rem;">Complete dental care</p>
+            </div>
+
+            <div class="text-center" style="padding: var(--space-md);">
+                <i class="fas fa-eye"
+                    style="font-size: 2.5rem; color: var(--success-500); margin-bottom: var(--space-md);"></i>
+                <h4 style="color: #fff;">Ophthalmology</h4>
+                <p style="font-size: 0.9rem;">Eye care specialists</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

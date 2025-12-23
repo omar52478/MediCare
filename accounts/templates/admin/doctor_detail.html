@@ -1,0 +1,722 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Doctor Details - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="admin-page-header fade-in">
+        <div class="header-left">
+            <a href="{% url 'admin_doctors' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1><i class="fas fa-user-md"></i> Doctor Details</h1>
+                <p>Complete doctor profile and schedule</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'admin_doctor_delete' doctor.id %}" class="btn btn-danger"
+                onclick="return confirm('Are you sure you want to delete this doctor?')">
+                <i class="fas fa-trash"></i> Delete Doctor
+            </a>
+        </div>
+    </div>
+
+    <!-- Doctor Profile Card -->
+    <div class="doctor-profile glass-card fade-in" style="animation-delay: 0.1s;">
+        <div class="profile-banner"></div>
+        <div class="profile-content">
+            <div class="profile-avatar">
+                {{ doctor.user.first_name|slice:":1"|upper }}{{ doctor.user.last_name|slice:":1"|upper }}
+            </div>
+            <div class="profile-info">
+                <div class="doctor-badge">
+                    <i class="fas fa-check-circle"></i> Verified Doctor
+                </div>
+                <h2>Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}</h2>
+                <div class="specialization-tag">
+                    <i class="fas fa-stethoscope"></i>
+                    {{ doctor.specialization.name }}
+                </div>
+                <div class="profile-details">
+                    <span><i class="fas fa-envelope"></i> {{ doctor.user.email }}</span>
+                    <span><i class="fas fa-at"></i> {{ doctor.user.username }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="doctor-stats fade-in" style="animation-delay: 0.15s;">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ appointments|length }}</div>
+                <div class="stat-label">Total Appointments</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ availabilities|length }}</div>
+                <div class="stat-label">Available Slots</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <!-- Availability Schedule -->
+        <div class="schedule-section glass-card fade-in" style="animation-delay: 0.2s;">
+            <div class="card-header">
+                <h3><i class="fas fa-calendar-week"></i> Weekly Schedule</h3>
+            </div>
+            <div class="card-body">
+                {% if availabilities %}
+                <div class="schedule-grid">
+                    {% for avail in availabilities %}
+                    <div class="schedule-item">
+                        <div class="day-indicator {{ avail.day|lower }}">
+                            {{ avail.day|slice:":3" }}
+                        </div>
+                        <div class="time-range">
+                            <div class="time-start">
+                                <i class="fas fa-play-circle"></i>
+                                {{ avail.start_time|time:"H:i" }}
+                            </div>
+                            <div class="time-line"></div>
+                            <div class="time-end">
+                                <i class="fas fa-stop-circle"></i>
+                                {{ avail.end_time|time:"H:i" }}
+                            </div>
+                        </div>
+                        <div class="full-day">{{ avail.day }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-schedule">
+                    <i class="fas fa-calendar-xmark"></i>
+                    <p>No availability slots configured</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Specialization Info -->
+        <div class="spec-section glass-card fade-in" style="animation-delay: 0.25s;">
+            <div class="card-header">
+                <h3><i class="fas fa-hospital"></i> Specialization</h3>
+            </div>
+            <div class="card-body">
+                <div class="spec-info-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h4>{{ doctor.specialization.name }}</h4>
+                    <p>{{ doctor.specialization.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments List -->
+    <div class="appointments-section glass-card fade-in" style="animation-delay: 0.3s;">
+        <div class="card-header">
+            <h3><i class="fas fa-users"></i> Patient Appointments</h3>
+            <span class="count-badge">{{ appointments|length }} patients</span>
+        </div>
+        <div class="card-body">
+            {% if appointments %}
+            <div class="appointments-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Email</th>
+                            <th>Day</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for apt in appointments %}
+                        <tr>
+                            <td>
+                                <div class="patient-cell">
+                                    <div class="patient-avatar">
+                                        {{ apt.patient.first_name|slice:":1"|upper }}
+                                    </div>
+                                    <span>{{ apt.patient.first_name }} {{ apt.patient.last_name }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="email">{{ apt.patient.email }}</span>
+                            </td>
+                            <td>
+                                <span class="day-badge {{ apt.day|lower }}">{{ apt.day }}</span>
+                            </td>
+                            <td>
+                                <span class="time-badge"><i class="fas fa-clock"></i> {{ apt.time|time:"H:i" }}</span>
+                            </td>
+                            <td>
+                                <a href="{% url 'admin_appointment_delete' apt.id %}" class="action-btn delete"
+                                    onclick="return confirm('Cancel this appointment?')" title="Cancel">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-appointments">
+                <i class="fas fa-user-clock"></i>
+                <p>No appointments scheduled with this doctor</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        padding: var(--space-lg) 0;
+        flex-wrap: wrap;
+        gap: var(--space-lg);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+    }
+
+    .back-btn {
+        width: 45px;
+        height: 45px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition-fast);
+    }
+
+    .back-btn:hover {
+        background: var(--primary-500);
+        transform: translateX(-3px);
+    }
+
+    .admin-page-header h1 {
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .admin-page-header h1 i {
+        color: var(--success-500);
+    }
+
+    .admin-page-header p {
+        color: var(--gray-400);
+        margin-top: var(--space-xs);
+    }
+
+    .btn-danger {
+        background: var(--gradient-danger);
+        border: none;
+    }
+
+    /* Doctor Profile */
+    .doctor-profile {
+        padding: 0;
+        overflow: hidden;
+        margin-bottom: var(--space-xl);
+    }
+
+    .profile-banner {
+        height: 120px;
+        background: var(--gradient-success);
+    }
+
+    .profile-content {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-xl);
+        padding: 0 var(--space-xl) var(--space-xl);
+        margin-top: -50px;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background: var(--gradient-success);
+        border-radius: var(--radius-2xl);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        border: 4px solid var(--bg-primary);
+        flex-shrink: 0;
+    }
+
+    .profile-info {
+        padding-top: var(--space-xl);
+    }
+
+    .doctor-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-xs);
+        background: rgba(76, 175, 80, 0.2);
+        color: var(--success-400);
+        padding: var(--space-xs) var(--space-md);
+        border-radius: var(--radius-full);
+        font-size: 0.85rem;
+        margin-bottom: var(--space-sm);
+    }
+
+    .doctor-badge i {
+        color: #FFD700;
+    }
+
+    .profile-info h2 {
+        font-size: 1.8rem;
+        margin-bottom: var(--space-sm);
+    }
+
+    .specialization-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+        background: rgba(33, 150, 243, 0.2);
+        color: var(--primary-400);
+        padding: var(--space-sm) var(--space-lg);
+        border-radius: var(--radius-full);
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: var(--space-md);
+    }
+
+    .profile-details {
+        display: flex;
+        gap: var(--space-xl);
+        flex-wrap: wrap;
+        color: var(--gray-400);
+    }
+
+    .profile-details span {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .profile-details i {
+        color: var(--primary-400);
+    }
+
+    /* Stats */
+    .doctor-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--space-lg);
+        margin-bottom: var(--space-xl);
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: var(--space-xl);
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-icon.blue {
+        background: rgba(33, 150, 243, 0.2);
+        color: var(--primary-400);
+    }
+
+    .stat-icon.green {
+        background: rgba(76, 175, 80, 0.2);
+        color: var(--success-500);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        /* -webkit-text-fill-color: transparent; */
+    }
+
+    .stat-label {
+        color: var(--gray-400);
+        font-size: 0.9rem;
+    }
+
+    /* Content Grid */
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: var(--space-xl);
+        margin-bottom: var(--space-xl);
+    }
+
+    .card-header {
+        padding: var(--space-lg) var(--space-xl);
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-header h3 {
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .card-header h3 i {
+        color: var(--primary-400);
+    }
+
+    .card-body {
+        padding: var(--space-xl);
+    }
+
+    .count-badge {
+        background: var(--gradient-primary);
+        padding: var(--space-xs) var(--space-md);
+        border-radius: var(--radius-full);
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    /* Schedule */
+    .schedule-section,
+    .spec-section,
+    .appointments-section {
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .schedule-grid {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    .schedule-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+        padding: var(--space-md);
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: var(--radius-lg);
+        transition: var(--transition-fast);
+    }
+
+    .schedule-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .day-indicator {
+        width: 50px;
+        height: 50px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+
+    .day-indicator.saturday {
+        background: rgba(244, 67, 54, 0.2);
+        color: #EF5350;
+    }
+
+    .day-indicator.sunday {
+        background: rgba(33, 150, 243, 0.2);
+        color: var(--primary-400);
+    }
+
+    .day-indicator.monday {
+        background: rgba(76, 175, 80, 0.2);
+        color: var(--success-400);
+    }
+
+    .day-indicator.tuesday {
+        background: rgba(255, 152, 0, 0.2);
+        color: var(--warning-400);
+    }
+
+    .day-indicator.wednesday {
+        background: rgba(156, 39, 176, 0.2);
+        color: #AB47BC;
+    }
+
+    .day-indicator.thursday {
+        background: rgba(0, 188, 212, 0.2);
+        color: var(--accent-400);
+    }
+
+    .day-indicator.friday {
+        background: rgba(233, 30, 99, 0.2);
+        color: #EC407A;
+    }
+
+    .time-range {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        flex: 1;
+    }
+
+    .time-start,
+    .time-end {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        font-weight: 500;
+    }
+
+    .time-start i {
+        color: var(--success-500);
+    }
+
+    .time-end i {
+        color: var(--danger-500);
+    }
+
+    .time-line {
+        flex: 1;
+        height: 2px;
+        background: linear-gradient(90deg, var(--success-500), var(--danger-500));
+        border-radius: 1px;
+    }
+
+    .full-day {
+        color: var(--gray-400);
+        font-size: 0.9rem;
+    }
+
+    .empty-schedule {
+        text-align: center;
+        padding: var(--space-xl);
+        color: var(--gray-500);
+    }
+
+    .empty-schedule i {
+        font-size: 3rem;
+        margin-bottom: var(--space-md);
+        color: var(--gray-600);
+    }
+
+    /* Specialization Info */
+    .spec-info-card {
+        text-align: center;
+    }
+
+    .spec-info-card .spec-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--gradient-medical);
+        border-radius: var(--radius-xl);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto var(--space-lg);
+    }
+
+    .spec-info-card h4 {
+        font-size: 1.3rem;
+        margin-bottom: var(--space-md);
+    }
+
+    .spec-info-card p {
+        color: var(--gray-400);
+        line-height: 1.6;
+    }
+
+    /* Appointments Table */
+    .appointments-table {
+        overflow-x: auto;
+    }
+
+    .appointments-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .appointments-table th {
+        padding: var(--space-md) var(--space-lg);
+        text-align: left;
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--gray-400);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    .appointments-table td {
+        padding: var(--space-md) var(--space-lg);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .patient-cell {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .patient-avatar {
+        width: 35px;
+        height: 35px;
+        background: var(--gradient-primary);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .email {
+        color: var(--gray-400);
+        font-size: 0.9rem;
+    }
+
+    .day-badge {
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .day-badge.saturday {
+        background: rgba(244, 67, 54, 0.2);
+        color: #EF5350;
+    }
+
+    .day-badge.sunday {
+        background: rgba(33, 150, 243, 0.2);
+        color: var(--primary-400);
+    }
+
+    .day-badge.monday {
+        background: rgba(76, 175, 80, 0.2);
+        color: var(--success-400);
+    }
+
+    .day-badge.tuesday {
+        background: rgba(255, 152, 0, 0.2);
+        color: var(--warning-400);
+    }
+
+    .day-badge.wednesday {
+        background: rgba(156, 39, 176, 0.2);
+        color: #AB47BC;
+    }
+
+    .day-badge.thursday {
+        background: rgba(0, 188, 212, 0.2);
+        color: var(--accent-400);
+    }
+
+    .day-badge.friday {
+        background: rgba(233, 30, 99, 0.2);
+        color: #EC407A;
+    }
+
+    .time-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-xs);
+        color: var(--gray-300);
+    }
+
+    .action-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition-fast);
+    }
+
+    .action-btn.delete {
+        background: rgba(244, 67, 54, 0.2);
+        color: var(--danger-500);
+    }
+
+    .action-btn.delete:hover {
+        background: var(--danger-500);
+        color: white;
+    }
+
+    .empty-appointments {
+        text-align: center;
+        padding: var(--space-2xl);
+        color: var(--gray-500);
+    }
+
+    .empty-appointments i {
+        font-size: 3rem;
+        margin-bottom: var(--space-md);
+        color: var(--gray-600);
+    }
+
+    @media (max-width: 768px) {
+        .profile-content {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .profile-details {
+            justify-content: center;
+        }
+
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}

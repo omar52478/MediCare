@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Manage Appointments - Admin{% endblock %}
+{% block content %}
+<div class="container">
+<div class="admin-page-header fade-in">
+<div class="header-left">
+<a href="{% url 'admin_dashboard' %}" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+<div>
+<h1><i class="fas fa-calendar-check"></i> Manage Appointments</h1>
+<p>{{ total_count }} total appointments</p>
+</div>
+</div>
+</div>
+<div class="search-section glass-card fade-in">
+<form method="get" class="search-form">
+<div class="input-wrapper">
+<input type="text" name="search" placeholder="Search by patient or doctor..." value="{{ search }}" class="search-input">
+<i class="fas fa-search input-icon"></i>
+</div>
+<select name="day" class="filter-select" onchange="this.form.submit()">
+<option value="">All Days</option>
+{% for day in days %}<option value="{{ day.name }}" {% if day.selected %}selected{% endif %}>{{ day.name }}</option>{% endfor %}
+</select>
+<button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+</form>
+</div>
+<div class="admin-table-card glass-card fade-in">
+<div class="table-responsive">
+<table class="admin-table">
+<thead>
+<tr>
+<th><i class="fas fa-hashtag"></i> ID</th>
+<th><i class="fas fa-user"></i> Patient</th>
+<th><i class="fas fa-user-md"></i> Doctor</th>
+<th><i class="fas fa-stethoscope"></i> Specialization</th>
+<th><i class="fas fa-calendar"></i> Day</th>
+<th><i class="fas fa-clock"></i> Time</th>
+<th><i class="fas fa-cog"></i> Actions</th>
+</tr>
+</thead>
+<tbody>
+{% for apt in appointments %}
+<tr>
+<td><span class="id-badge">#{{ apt.id }}</span></td>
+<td>
+<div class="user-cell">
+<div class="user-avatar patient"><span>{{ apt.patient.first_name|slice:":1"|upper }}</span><span>{{ apt.patient.last_name|slice:":1"|upper }}</span></div>
+<div class="user-info">
+<span class="user-name"><span>{{ apt.patient.first_name }}</span> <span>{{ apt.patient.last_name }}</span></span>
+<span class="user-email">{{ apt.patient.email }}</span>
+</div>
+</div>
+</td>
+<td>
+<div class="user-cell">
+<div class="user-avatar doctor"><span>{{ apt.doctor.user.first_name|slice:":1"|upper }}</span><span>{{ apt.doctor.user.last_name|slice:":1"|upper }}</span></div>
+<span class="doctor-name">Dr. <span>{{ apt.doctor.user.first_name }}</span> <span>{{ apt.doctor.user.last_name }}</span></span>
+</div>
+</td>
+<td><span class="spec-badge"><i class="fas fa-stethoscope"></i> {{ apt.doctor.specialization.name }}</span></td>
+<td><span class="day-badge {{ apt.day|lower }}"><i class="fas fa-calendar-day"></i> {{ apt.day }}</span></td>
+<td><span class="time-badge"><i class="fas fa-clock"></i> {{ apt.time|time:"H:i" }}</span></td>
+<td><a href="{% url 'admin_appointment_delete' apt.id %}" class="action-btn delete" onclick="return confirm('Delete this appointment?')"><i class="fas fa-trash-alt"></i></a></td>
+</tr>
+{% empty %}
+<tr><td colspan="7" class="empty-state"><div class="empty-content"><i class="fas fa-calendar-xmark"></i><h3>No appointments found</h3><p>Try adjusting your search or filters</p></div></td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% if appointments.has_other_pages %}
+<div class="pagination-wrapper">
+<div class="pagination">
+{% if appointments.has_previous %}<a href="?page=1{% if search %}&search={{ search }}{% endif %}{% if day_filter %}&day={{ day_filter }}{% endif %}" class="page-btn first"><i class="fas fa-angle-double-left"></i></a><a href="?page={{ appointments.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if day_filter %}&day={{ day_filter }}{% endif %}" class="page-btn"><i class="fas fa-chevron-left"></i></a>{% endif %}
+{% for num in appointments.paginator.page_range %}{% if appointments.number == num %}<span class="page-btn active">{{ num }}</span>{% elif num > appointments.number|add:'-4' and num < appointments.number|add:'4' %}<a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if day_filter %}&day={{ day_filter }}{% endif %}" class="page-btn">{{ num }}</a>{% endif %}{% endfor %}
+{% if appointments.has_next %}<a href="?page={{ appointments.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if day_filter %}&day={{ day_filter }}{% endif %}" class="page-btn"><i class="fas fa-chevron-right"></i></a><a href="?page={{ appointments.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if day_filter %}&day={{ day_filter }}{% endif %}" class="page-btn last"><i class="fas fa-angle-double-right"></i></a>{% endif %}
+</div>
+<span class="page-info">Showing page <strong>{{ appointments.number }}</strong> of <strong>{{ appointments.paginator.num_pages }}</strong> ({{ total_count }} records)</span>
+</div>
+{% endif %}
+</div>
+</div>
+{% endblock %}
+{% block extra_css %}
+<style>
+.admin-page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding:1.5rem 0}
+.header-left{display:flex;align-items:center;gap:1.5rem}
+.back-btn{width:55px;height:55px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;transition:all .3s ease;box-shadow:0 8px 25px rgba(102,126,234,.4)}
+.back-btn:hover{transform:translateX(-5px) scale(1.05);box-shadow:0 12px 35px rgba(102,126,234,.5)}
+.admin-page-header h1{font-size:2.2rem;display:flex;align-items:center;gap:.75rem;margin-bottom:5px;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.admin-page-header h1 i{-webkit-text-fill-color:#26c6da}
+.admin-page-header p{color:#94a3b8;margin:0;font-size:1rem}
+.search-section{padding:1.5rem;margin-bottom:2rem;background:linear-gradient(135deg,rgba(102,126,234,.1),rgba(118,75,162,.05));border:1px solid rgba(102,126,234,.2)}
+.search-form{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.search-form .input-wrapper{flex:1;min-width:280px;position:relative}
+.input-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#64748b;pointer-events:none;font-size:1rem}
+.search-input{width:100%;padding:14px 14px 14px 50px;background:rgba(15,23,42,.6);border:2px solid rgba(148,163,184,.2);border-radius:14px;color:#fff;font-size:1rem;transition:all .3s ease}
+.search-input:focus{outline:none;border-color:#667eea;background:rgba(102,126,234,.1);box-shadow:0 0 0 4px rgba(102,126,234,.15)}
+.search-input::placeholder{color:#64748b}
+.filter-select{padding:14px 45px 14px 18px;background:rgba(15,23,42,.6);border:2px solid rgba(148,163,184,.2);border-radius:14px;color:#fff;font-size:1rem;cursor:pointer;min-width:180px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:20px;transition:all .3s ease}
+.filter-select:focus{outline:none;border-color:#667eea}
+.filter-select option{background:#1e293b;color:#fff}
+.admin-table-card{padding:0;overflow:hidden;border-radius:24px;background:linear-gradient(135deg,rgba(30,41,59,.9),rgba(15,23,42,.95));border:1px solid rgba(148,163,184,.1);box-shadow:0 25px 50px -12px rgba(0,0,0,.5)}
+.table-responsive{overflow-x:auto}
+.admin-table{width:100%;border-collapse:collapse}
+.admin-table th{padding:20px 24px;text-align:left;background:linear-gradient(135deg,rgba(102,126,234,.15),rgba(118,75,162,.1));color:#e2e8f0;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:1.5px;border-bottom:2px solid rgba(102,126,234,.3)}
+.admin-table th i{margin-right:8px;color:#667eea}
+.admin-table td{padding:18px 24px;border-bottom:1px solid rgba(148,163,184,.08);vertical-align:middle}
+.admin-table tbody tr{transition:all .3s ease}
+.admin-table tbody tr:hover{background:linear-gradient(135deg,rgba(102,126,234,.08),rgba(118,75,162,.05))}
+.id-badge{background:linear-gradient(135deg,#312e81,#4c1d95);color:#a78bfa;padding:8px 14px;border-radius:10px;font-family:'Fira Code',monospace;font-size:.9rem;font-weight:700;border:1px solid rgba(167,139,250,.3);box-shadow:0 4px 12px rgba(167,139,250,.2)}
+.user-cell{display:flex;align-items:center;gap:14px}
+.user-avatar{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;text-transform:uppercase}
+.user-avatar.patient{background:linear-gradient(135deg,#0ea5e9,#06b6d4);box-shadow:0 6px 20px rgba(14,165,233,.4)}
+.user-avatar.doctor{background:linear-gradient(135deg,#10b981,#34d399);box-shadow:0 6px 20px rgba(16,185,129,.4)}
+.user-info{display:flex;flex-direction:column;gap:3px}
+.user-name{font-weight:600;color:#f1f5f9;font-size:.95rem}
+.user-email{font-size:.8rem;color:#64748b}
+.doctor-name{font-weight:600;color:#f1f5f9}
+.spec-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(52,211,153,.1));color:#34d399;padding:10px 16px;border-radius:12px;font-size:.85rem;font-weight:600;border:1px solid rgba(52,211,153,.3)}
+.day-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;font-size:.85rem;font-weight:700}
+.day-badge.saturday{background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(248,113,113,.1));color:#f87171;border:1px solid rgba(248,113,113,.3)}
+.day-badge.sunday{background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(96,165,250,.1));color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
+.day-badge.monday{background:linear-gradient(135deg,rgba(34,197,94,.2),rgba(74,222,128,.1));color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+.day-badge.tuesday{background:linear-gradient(135deg,rgba(251,146,60,.2),rgba(253,186,116,.1));color:#fdba74;border:1px solid rgba(253,186,116,.3)}
+.day-badge.wednesday{background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(192,132,252,.1));color:#c084fc;border:1px solid rgba(192,132,252,.3)}
+.day-badge.thursday{background:linear-gradient(135deg,rgba(6,182,212,.2),rgba(34,211,238,.1));color:#22d3ee;border:1px solid rgba(34,211,238,.3)}
+.day-badge.friday{background:linear-gradient(135deg,rgba(236,72,153,.2),rgba(244,114,182,.1));color:#f472b6;border:1px solid rgba(244,114,182,.3)}
+.time-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(129,140,248,.1));color:#818cf8;padding:10px 16px;border-radius:12px;font-size:.9rem;font-weight:700;border:1px solid rgba(129,140,248,.3)}
+.action-btn{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;transition:all .3s ease}
+.action-btn.delete{background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(248,113,113,.1));color:#f87171;border:1px solid rgba(248,113,113,.3)}
+.action-btn.delete:hover{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;transform:scale(1.15) rotate(5deg);box-shadow:0 8px 25px rgba(239,68,68,.5)}
+.empty-state{text-align:center;padding:80px 20px!important}
+.empty-content{display:flex;flex-direction:column;align-items:center;gap:16px}
+.empty-content i{font-size:5rem;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;opacity:.5}
+.empty-content h3{color:#e2e8f0;font-size:1.5rem;margin:0}
+.empty-content p{color:#64748b;margin:0}
+.pagination-wrapper{display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px;background:linear-gradient(135deg,rgba(102,126,234,.08),rgba(118,75,162,.05));border-top:1px solid rgba(148,163,184,.1)}
+.pagination{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.page-btn{min-width:44px;height:44px;padding:0 14px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:rgba(30,41,59,.8);color:#94a3b8;border:1px solid rgba(148,163,184,.15);transition:all .3s ease;font-weight:600;font-size:.95rem}
+.page-btn:hover{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(102,126,234,.4);border-color:transparent}
+.page-btn.active{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;box-shadow:0 8px 25px rgba(102,126,234,.5);border-color:transparent;transform:scale(1.05)}
+.page-btn.first,.page-btn.last{background:rgba(102,126,234,.15);color:#667eea;border-color:rgba(102,126,234,.3)}
+.page-info{color:#94a3b8;font-size:.9rem}
+.page-info strong{color:#667eea}
+@media(max-width:768px){.search-form{flex-direction:column}.search-form .input-wrapper{min-width:100%}.filter-select{width:100%}.admin-page-header h1{font-size:1.6rem}.pagination{gap:6px}.page-btn{min-width:38px;height:38px;font-size:.85rem}}
+</style>
+{% endblock %}

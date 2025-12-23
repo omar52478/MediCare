@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-3 fade-in">
+        <h1>
+            <i class="fas fa-calendar-plus" style="color: var(--primary-400);"></i>
+            Book an Appointment
+        </h1>
+        <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+            Select your preferred specialization and doctor to schedule your visit
+        </p>
+    </div>
+
+    <!-- Booking Steps -->
+    <div class="booking-steps fade-in" style="animation-delay: 0.1s;">
+        <div class="booking-step {% if not selected_spec %}active{% else %}completed{% endif %}">
+            <div class="step-number">
+                {% if selected_spec %}<i class="fas fa-check"></i>{% else %}1{% endif %}
+            </div>
+            <span>Specialization</span>
+        </div>
+        <div
+            class="booking-step {% if selected_spec and not selected_doctor %}active{% elif selected_doctor %}completed{% endif %}">
+            <div class="step-number">
+                {% if selected_doctor %}<i class="fas fa-check"></i>{% else %}2{% endif %}
+            </div>
+            <span>Doctor</span>
+        </div>
+        <div class="booking-step {% if availabilities %}active{% endif %}">
+            <div class="step-number">3</div>
+            <span>Time Slot</span>
+        </div>
+    </div>
+
+    <!-- Selection Form -->
+    <div class="glass-card fade-in" style="animation-delay: 0.2s; max-width: 800px; margin: 0 auto;">
+        <form method="get" id="selectionForm">
+            <div class="d-grid"
+                style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-xl);">
+
+                <!-- Specialization Selection -->
+                <div class="form-group">
+                    <label
+                        style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);">
+                        <div
+                            style="width: 40px; height: 40px; background: var(--gradient-medical); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <span>Select Specialization</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <select name="specialization" onchange="this.form.submit()" required>
+                            <option value="">-- Choose Specialization --</option>
+                            {% for s in specializations %}
+                            <option value="{{ s.id }}" {% if s.id == selected_spec %}selected{% endif %}>
+                                {{ s.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <i class="fas fa-heart-pulse input-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Doctor Selection -->
+                {% if doctors %}
+                <div class="form-group">
+                    <label
+                        style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);">
+                        <div
+                            style="width: 40px; height: 40px; background: var(--gradient-success); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <span>Select Doctor</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <select name="doctor" onchange="this.form.submit()" required>
+                            <option value="">-- Choose Doctor --</option>
+                            {% for d in doctors %}
+                            <option value="{{ d.id }}" {% if d.id == selected_doctor %}selected{% endif %}>
+                                Dr. {{ d.user.username }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <i class="fas fa-user-doctor input-icon"></i>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Available Time Slots -->
+    {% if availabilities %}
+    <div class="glass-card fade-in mt-3"
+        style="animation-delay: 0.3s; max-width: 800px; margin: var(--space-xl) auto 0;">
+        <h3 style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg);">
+            <i class="fas fa-clock" style="color: var(--accent-400);"></i>
+            Available Time Slots
+        </h3>
+
+        <form method="post" id="bookingForm">
+            {% csrf_token %}
+            <input type="hidden" name="specialization" value="{{ selected_spec }}">
+            <input type="hidden" name="doctor" value="{{ selected_doctor }}">
+
+            <div class="time-slots">
+                {% for a in availabilities %}
+                <div class="time-slot">
+                    <input type="radio" name="slot" id="slot_{{ forloop.counter }}"
+                        value="{{ a.day }}|{{ a.start_time|time:'H:i' }}" required>
+                    <label for="slot_{{ forloop.counter }}">
+                        <div class="day">
+                            <i class="fas fa-calendar-day"></i>
+                            {{ a.day }}
+                        </div>
+                        <div class="time">
+                            <i class="fas fa-clock"></i>
+                            {{ a.start_time|time:"H:i" }} - {{ a.end_time|time:"H:i" }}
+                        </div>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="fas fa-check-circle"></i>
+                    Confirm Booking
+                </button>
+            </div>
+        </form>
+    </div>
+    {% elif selected_doctor %}
+    <div class="glass-card fade-in mt-3 text-center"
+        style="max-width: 600px; margin: var(--space-xl) auto 0; padding: var(--space-2xl);">
+        <i class="fas fa-calendar-xmark"
+            style="font-size: 4rem; color: var(--warning-500); margin-bottom: var(--space-lg);"></i>
+        <h3>No Available Slots</h3>
+        <p>This doctor doesn't have any available time slots at the moment.</p>
+        <p>Please try another doctor or check back later.</p>
+    </div>
+    {% endif %}
+
+    <!-- Info Cards -->
+    {% if not selected_spec %}
+    <div class="features-grid mt-4">
+        <div class="feature-card animate-on-scroll">
+            <div class="icon blue">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3>Find Your Specialist</h3>
+            <p>Browse through various medical specializations to find the right care</p>
+        </div>
+
+        <div class="feature-card animate-on-scroll">
+            <div class="icon green">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3>Pick Your Time</h3>
+            <p>Choose from available time slots that work best for your schedule</p>
+        </div>
+
+        <div class="feature-card animate-on-scroll">
+            <div class="icon purple">
+                <i class="fas fa-bell"></i>
+            </div>
+            <h3>Get Confirmed</h3>
+            <p>Receive instant confirmation and reminders for your appointment</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .time-slots {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: var(--space-md);
+    }
+
+    .time-slot input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .time-slot label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-lg);
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-xl);
+        cursor: pointer;
+        transition: var(--transition-normal);
+        text-align: center;
+    }
+
+    .time-slot label:hover {
+        border-color: var(--primary-400);
+        background: rgba(33, 150, 243, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .time-slot input:checked+label {
+        border-color: var(--success-500);
+        background: rgba(76, 175, 80, 0.2);
+        box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+    }
+
+    .time-slot input:checked+label::after {
+        content: '✓';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 25px;
+        height: 25px;
+        background: var(--success-500);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        color: #fff;
+    }
+
+    .time-slot .day {
+        font-weight: 600;
+        color: var(--primary-300);
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+    }
+
+    .time-slot .time {
+        font-size: 0.9rem;
+        color: var(--gray-400);
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+    }
+</style>
+{% endblock %}

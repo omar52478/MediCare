@@ -1,0 +1,892 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Admin Header -->
+    <div class="admin-header fade-in">
+        <div class="admin-header-bg"></div>
+        <div class="admin-header-content">
+            <div class="admin-title">
+                <div class="admin-icon pulse-glow">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h1>Admin Dashboard</h1>
+                    <p><i class="fas fa-hospital-alt"></i> Hospital Management System Control Panel</p>
+                </div>
+            </div>
+            <div class="admin-user-info">
+                <div class="admin-avatar">
+                    {{ request.user.username|slice:":1"|upper }}
+                </div>
+                <div class="admin-user-details">
+                    <span class="admin-name">{{ request.user.username }}</span>
+                    <span class="admin-role"><i class="fas fa-crown"></i> Super Admin</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="admin-stats fade-in" style="animation-delay: 0.1s;">
+        <div class="stat-card patients">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number" data-count="{{ total_patients }}">0</div>
+                <div class="stat-label">Total Patients</div>
+            </div>
+            <a href="{% url 'admin_patients' %}" class="stat-link">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="stat-card doctors">
+            <div class="stat-icon">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number" data-count="{{ total_doctors }}">0</div>
+                <div class="stat-label">Total Doctors</div>
+            </div>
+            <a href="{% url 'admin_doctors' %}" class="stat-link">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="stat-card appointments">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number" data-count="{{ total_appointments }}">0</div>
+                <div class="stat-label">Appointments</div>
+            </div>
+            <a href="{% url 'admin_appointments' %}" class="stat-link">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="stat-card specializations">
+            <div class="stat-icon">
+                <i class="fas fa-stethoscope"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number" data-count="{{ total_specializations }}">0</div>
+                <div class="stat-label">Specializations</div>
+            </div>
+            <a href="{% url 'admin_specializations' %}" class="stat-link">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="admin-actions fade-in" style="animation-delay: 0.15s;">
+        <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="{% url 'admin_patients' %}" class="action-btn blue">
+                <i class="fas fa-user-plus"></i>
+                Manage Patients
+            </a>
+            <a href="{% url 'admin_doctors' %}" class="action-btn green">
+                <i class="fas fa-user-doctor"></i>
+                Manage Doctors
+            </a>
+            <a href="{% url 'admin_appointments' %}" class="action-btn purple">
+                <i class="fas fa-calendar-alt"></i>
+                Manage Appointments
+            </a>
+            <a href="{% url 'admin_specializations' %}" class="action-btn orange">
+                <i class="fas fa-hospital"></i>
+                Specializations
+            </a>
+        </div>
+    </div>
+
+    <div class="admin-grid fade-in" style="animation-delay: 0.2s;">
+        <!-- Recent Appointments -->
+        <div class="admin-card">
+            <div class="card-header">
+                <h3><i class="fas fa-clock"></i> Recent Appointments</h3>
+                <a href="{% url 'admin_appointments' %}" class="view-all">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Day</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for apt in recent_appointments %}
+                            <tr>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="avatar small">{{ apt.patient.username|slice:":1"|upper }}</div>
+                                        <span>{{ apt.patient.username }}</span>
+                                    </div>
+                                </td>
+                                <td>Dr. {{ apt.doctor.user.first_name }}</td>
+                                <td><span class="day-badge">{{ apt.day }}</span></td>
+                                <td>{{ apt.time|time:"H:i" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="empty-state">No appointments yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctors by Specialization -->
+        <div class="admin-card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-pie"></i> Doctors by Specialization</h3>
+                <a href="{% url 'admin_specializations' %}" class="view-all">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="spec-list">
+                    {% for spec in specialization_stats %}
+                    <div class="spec-item">
+                        <div class="spec-info">
+                            <div class="spec-icon">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                            <span class="spec-name">{{ spec.name }}</span>
+                        </div>
+                        <div class="spec-count">
+                            <span class="count-badge">{{ spec.doctor_count }}</span>
+                            <span class="count-label">doctors</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Patients -->
+    <div class="admin-card full-width fade-in" style="animation-delay: 0.3s;">
+        <div class="card-header">
+            <h3><i class="fas fa-user-clock"></i> Recently Registered Patients</h3>
+            <a href="{% url 'admin_patients' %}" class="view-all">View All Patients</a>
+        </div>
+        <div class="card-body">
+            <div class="patient-cards">
+                {% for profile in recent_patients %}
+                <div class="patient-mini-card">
+                    <div class="patient-avatar">
+                        {% if profile.image %}
+                        <img src="{{ profile.image.url }}" alt="{{ profile.user.username }}">
+                        {% else %}
+                        {{ profile.user.username|slice:":1"|upper }}
+                        {% endif %}
+                    </div>
+                    <div class="patient-info">
+                        <h4>{{ profile.user.first_name }} {{ profile.user.last_name }}</h4>
+                        <p><i class="fas fa-phone"></i> {{ profile.phone }}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> {{ profile.governorate }}</p>
+                    </div>
+                    <a href="{% url 'admin_patient_detail' profile.id %}" class="view-btn">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                </div>
+                {% empty %}
+                <p class="empty-state">No patients registered yet</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Admin Header - Premium Design */
+    .admin-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        border-radius: var(--radius-2xl);
+        padding: var(--space-2xl) var(--space-xl);
+        margin-bottom: var(--space-xl);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+    }
+
+    .admin-header-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 40%),
+            radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 30%);
+        animation: bgFloat 20s ease-in-out infinite;
+    }
+
+    @keyframes bgFloat {
+
+        0%,
+        100% {
+            transform: translateY(0) scale(1);
+        }
+
+        50% {
+            transform: translateY(-10px) scale(1.02);
+        }
+    }
+
+    .admin-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .admin-title {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+    }
+
+    .admin-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: var(--radius-xl);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        color: #fff;
+    }
+
+    .admin-icon.pulse-glow {
+        animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+
+        0%,
+        100% {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            transform: scale(1);
+        }
+
+        50% {
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+    }
+
+    .admin-title h1 {
+        font-size: 2.2rem;
+        margin-bottom: var(--space-xs);
+        color: #fff;
+        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        -webkit-text-fill-color: #fff;
+        background: none;
+    }
+
+    .admin-title p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .admin-title p i {
+        font-size: 0.9rem;
+    }
+
+    .admin-user-info {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        padding: var(--space-md) var(--space-lg);
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .admin-avatar {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #333;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    }
+
+    .admin-user-details {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .admin-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #fff;
+    }
+
+    .admin-role {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+    }
+
+    .admin-role i {
+        color: #FFD700;
+        font-size: 0.75rem;
+    }
+
+    /* Stats Cards */
+    .admin-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: var(--space-lg);
+        margin-bottom: var(--space-xl);
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: var(--space-xl);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition-normal);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+    }
+
+    .stat-card.patients::before {
+        background: var(--gradient-primary);
+    }
+
+    .stat-card.doctors::before {
+        background: var(--gradient-success);
+    }
+
+    .stat-card.appointments::before {
+        background: var(--gradient-accent);
+    }
+
+    .stat-card.specializations::before {
+        background: linear-gradient(135deg, #FF6B35, #F7931E);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-card.patients .stat-icon {
+        background: rgba(33, 150, 243, 0.2);
+        color: var(--primary-400);
+    }
+
+    .stat-card.doctors .stat-icon {
+        background: rgba(76, 175, 80, 0.2);
+        color: var(--success-500);
+    }
+
+    .stat-card.appointments .stat-icon {
+        background: rgba(0, 188, 212, 0.2);
+        color: var(--accent-400);
+    }
+
+    .stat-card.specializations .stat-icon {
+        background: rgba(255, 107, 53, 0.2);
+        color: #FF6B35;
+    }
+
+    .stat-number {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #ffffff;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        margin-bottom: var(--space-xs);
+        line-height: 1;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.95rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-xs);
+        color: var(--primary-400);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: var(--transition-fast);
+    }
+
+    .stat-link:hover {
+        color: var(--primary-300);
+        gap: var(--space-sm);
+    }
+
+    /* Quick Actions */
+    .admin-actions {
+        margin-bottom: var(--space-xl);
+    }
+
+    .admin-actions h2 {
+        font-size: 1.3rem;
+        margin-bottom: var(--space-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .admin-actions h2 i {
+        color: var(--warning-500);
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-md);
+    }
+
+    .action-btn {
+        padding: var(--space-md) var(--space-xl);
+        border-radius: var(--radius-lg);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+        font-weight: 600;
+        transition: var(--transition-normal);
+        border: 2px solid transparent;
+    }
+
+    .action-btn.blue {
+        background: rgba(33, 150, 243, 0.15);
+        color: var(--primary-400);
+        border-color: var(--primary-400);
+    }
+
+    .action-btn.green {
+        background: rgba(76, 175, 80, 0.15);
+        color: var(--success-500);
+        border-color: var(--success-500);
+    }
+
+    .action-btn.purple {
+        background: rgba(156, 39, 176, 0.15);
+        color: #AB47BC;
+        border-color: #AB47BC;
+    }
+
+    .action-btn.orange {
+        background: rgba(255, 107, 53, 0.15);
+        color: #FF6B35;
+        border-color: #FF6B35;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .action-btn.blue:hover {
+        background: var(--primary-400);
+        color: white;
+    }
+
+    .action-btn.green:hover {
+        background: var(--success-500);
+        color: white;
+    }
+
+    .action-btn.purple:hover {
+        background: #AB47BC;
+        color: white;
+    }
+
+    .action-btn.orange:hover {
+        background: #FF6B35;
+        color: white;
+    }
+
+    /* Admin Grid */
+    .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: var(--space-xl);
+        margin-bottom: var(--space-xl);
+    }
+
+    .admin-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+    }
+
+    .admin-card.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .card-header {
+        padding: var(--space-lg) var(--space-xl);
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-header h3 {
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .card-header h3 i {
+        color: var(--primary-400);
+    }
+
+    .view-all {
+        color: var(--primary-400);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .view-all:hover {
+        color: var(--primary-300);
+    }
+
+    .card-body {
+        padding: var(--space-lg);
+    }
+
+    /* Data Table */
+    .data-table {
+        overflow-x: auto;
+    }
+
+    .data-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: var(--space-md);
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .data-table th {
+        color: var(--gray-400);
+        font-weight: 500;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .data-table tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .avatar {
+        width: 35px;
+        height: 35px;
+        background: var(--gradient-primary);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .avatar.small {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+    .day-badge {
+        background: rgba(0, 188, 212, 0.2);
+        color: var(--accent-400);
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: var(--gray-500);
+        padding: var(--space-xl) !important;
+    }
+
+    /* Specialization List */
+    .spec-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    .spec-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-md);
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: var(--radius-md);
+        transition: var(--transition-fast);
+    }
+
+    .spec-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .spec-info {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+    }
+
+    .spec-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gradient-success);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .spec-name {
+        font-weight: 500;
+    }
+
+    .spec-count {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+    }
+
+    .count-badge {
+        background: var(--gradient-primary);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .count-label {
+        color: var(--gray-400);
+        font-size: 0.85rem;
+    }
+
+    /* Patient Cards */
+    .patient-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--space-lg);
+    }
+
+    .patient-mini-card {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-md);
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: var(--radius-lg);
+        transition: var(--transition-fast);
+    }
+
+    .patient-mini-card:hover {
+        background: rgba(255, 255, 255, 0.06);
+        transform: translateX(5px);
+    }
+
+    .patient-avatar {
+        width: 50px;
+        height: 50px;
+        background: var(--gradient-accent);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .patient-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .patient-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .patient-info h4 {
+        font-size: 0.95rem;
+        margin-bottom: var(--space-xs);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .patient-info p {
+        font-size: 0.8rem;
+        color: var(--gray-400);
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+    }
+
+    .patient-info p i {
+        color: var(--primary-400);
+        width: 14px;
+    }
+
+    .view-btn {
+        width: 40px;
+        height: 40px;
+        background: var(--gradient-primary);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition-fast);
+    }
+
+    .view-btn:hover {
+        transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+        .admin-header-content {
+            flex-direction: column;
+            gap: var(--space-lg);
+            text-align: center;
+        }
+
+        .admin-title {
+            flex-direction: column;
+        }
+
+        .admin-title p {
+            justify-content: center;
+        }
+
+        .admin-user-info {
+            padding: var(--space-sm) var(--space-md);
+        }
+
+        .admin-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Animate stat numbers
+    document.addEventListener('DOMContentLoaded', function () {
+        const statNumbers = document.querySelectorAll('.stat-number');
+
+        statNumbers.forEach(stat => {
+            const target = parseInt(stat.dataset.count);
+            const duration = 1500;
+            const step = target / (duration / 16);
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    stat.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    stat.textContent = Math.floor(current);
+                }
+            }, 16);
+        });
+    });
+</script>
+{% endblock %}

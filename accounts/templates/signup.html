@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container fade-in" style="max-width: 600px;">
+        <div class="glass-card">
+            <div class="form-header">
+                <div class="icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h2>Create Your Account</h2>
+                <p>Join Medicare Pro for seamless healthcare management</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" id="signupForm">
+                {% csrf_token %}
+
+                <!-- Account Information Section -->
+                <div class="section-header" style="margin-bottom: var(--space-lg);">
+                    <h3
+                        style="font-size: 1.1rem; color: var(--primary-300); display: flex; align-items: center; gap: var(--space-sm);">
+                        <i class="fas fa-user-circle"></i> Account Information
+                    </h3>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                            <i class="fas fa-envelope input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" name="password" placeholder="Create password" required>
+                            <i class="fas fa-lock input-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-divider">
+                    <span>Personal Details</span>
+                </div>
+
+                <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="phone" name="phone" placeholder="01xxxxxxxxx" required>
+                            <i class="fas fa-phone input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="age" name="age" placeholder="Your age" min="1" max="120" required>
+                            <i class="fas fa-birthday-cake input-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="national_id">National ID</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="national_id" name="national_id" placeholder="14-digit National ID"
+                            maxlength="14" required>
+                        <i class="fas fa-id-card input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Profile Photo (Optional)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" name="image" accept="image/*">
+                        <div class="file-input-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Click to upload your photo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-divider">
+                    <span>Address Information</span>
+                </div>
+
+                <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                    <div class="form-group">
+                        <label for="governorate">Governorate</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="governorate" name="governorate" placeholder="e.g., Cairo" required>
+                            <i class="fas fa-map-marker-alt input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="city" name="city" placeholder="e.g., Nasr City" required>
+                            <i class="fas fa-city input-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="street">Street Address</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="street" name="street" placeholder="Street name and building number"
+                            required>
+                        <i class="fas fa-road input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-divider">
+                    <span>Emergency Contact</span>
+                </div>
+
+                <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                    <div class="form-group">
+                        <label for="emergency_name">Contact Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="emergency_name" name="emergency_name" placeholder="Full name"
+                                required>
+                            <i class="fas fa-user-friends input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emergency_phone">Contact Phone</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="emergency_phone" name="emergency_phone" placeholder="Phone number"
+                                required>
+                            <i class="fas fa-phone-alt input-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="emergency_relation">Relationship</label>
+                    <div class="input-wrapper">
+                        <select id="emergency_relation" name="emergency_relation" required>
+                            <option value="">Select relationship</option>
+                            <option value="Parent">Parent</option>
+                            <option value="Spouse">Spouse</option>
+                            <option value="Sibling">Sibling</option>
+                            <option value="Child">Child</option>
+                            <option value="Friend">Friend</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <i class="fas fa-heart input-icon"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success btn-block btn-lg mt-3">
+                    <i class="fas fa-check-circle"></i>
+                    Create Account
+                </button>
+            </form>
+
+            <div class="form-divider">
+                <span>Already have an account?</span>
+            </div>
+
+            <div class="text-center">
+                <a href="{% url 'login' %}" class="btn btn-outline btn-block">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In Instead
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media (max-width: 600px) {
+        .d-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Availability{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container fade-in" style="max-width: 550px;">
+        <div class="glass-card">
+            <div class="form-header">
+                <div class="icon" style="background: var(--gradient-primary);">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <h2>Update Availability</h2>
+                <p>Modify your scheduled availability</p>
+            </div>
+
+            <form method="post" id="availabilityForm">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="day">
+                        <i class="fas fa-calendar-day" style="color: var(--primary-400);"></i>
+                        Select Day
+                    </label>
+                    <div class="input-wrapper">
+                        <select id="day" name="day" required>
+                            <option value="Saturday" {% if availability.day=="Saturday" %}selected{% endif %}>Saturday
+                            </option>
+                            <option value="Sunday" {% if availability.day=="Sunday" %}selected{% endif %}>Sunday
+                            </option>
+                            <option value="Monday" {% if availability.day=="Monday" %}selected{% endif %}>Monday
+                            </option>
+                            <option value="Tuesday" {% if availability.day=="Tuesday" %}selected{% endif %}>Tuesday
+                            </option>
+                            <option value="Wednesday" {% if availability.day=="Wednesday" %}selected{% endif %}>
+                                Wednesday</option>
+                            <option value="Thursday" {% if availability.day=="Thursday" %}selected{% endif %}>Thursday
+                            </option>
+                            <option value="Friday" {% if availability.day=="Friday" %}selected{% endif %}>Friday
+                            </option>
+                        </select>
+                        <i class="fas fa-calendar input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-lg);">
+                    <div class="form-group">
+                        <label for="start_time">
+                            <i class="fas fa-play" style="color: var(--success-500);"></i>
+                            Start Time
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="time" id="start_time" name="start_time"
+                                value="{{ availability.start_time|time:'H:i' }}" required>
+                            <i class="fas fa-clock input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="end_time">
+                            <i class="fas fa-stop" style="color: var(--error-500);"></i>
+                            End Time
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="time" id="end_time" name="end_time"
+                                value="{{ availability.end_time|time:'H:i' }}" required>
+                            <i class="fas fa-clock input-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Info -->
+                <div
+                    style="background: rgba(255,255,255,0.05); border-radius: var(--radius-lg); padding: var(--space-md); margin-bottom: var(--space-lg);">
+                    <div
+                        style="display: flex; align-items: center; gap: var(--space-sm); color: var(--gray-400); font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Currently set for <strong style="color: var(--primary-300);">{{ availability.day
+                                }}</strong> from
+                            <strong style="color: var(--success-500);">{{ availability.start_time|time:"h:i A"
+                                }}</strong> to
+                            <strong style="color: var(--error-500);">{{ availability.end_time|time:"h:i A"
+                                }}</strong></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    <i class="fas fa-save"></i>
+                    Update Availability
+                </button>
+
+                <div class="d-grid mt-2" style="grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                    <a href="{% url 'my_availability_list' %}" class="btn btn-secondary btn-block">
+                        <i class="fas fa-arrow-left"></i>
+                        Cancel
+                    </a>
+                    <a href="{% url 'my_availability_delete' availability.id %}" class="btn btn-danger btn-block"
+                        onclick="return confirm('Are you sure you want to delete this availability?');">
+                        <i class="fas fa-trash"></i>
+                        Delete
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const startTime = document.getElementById('start_time');
+        const endTime = document.getElementById('end_time');
+
+        function validateTimes() {
+            if (startTime.value && endTime.value) {
+                const start = new Date('2000-01-01 ' + startTime.value);
+                const end = new Date('2000-01-01 ' + endTime.value);
+
+                if (end <= start) {
+                    endTime.style.borderColor = 'var(--error-500)';
+                    endTime.setCustomValidity('End time must be after start time');
+                } else {
+                    endTime.style.borderColor = 'var(--success-500)';
+                    endTime.setCustomValidity('');
+                }
+            }
+        }
+
+        startTime.addEventListener('change', validateTimes);
+        endTime.addEventListener('change', validateTimes);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,4 @@
+# Ignore Django templates
+accounts/templates/**/*.html
+**/templates/**/*.html
+*.html
