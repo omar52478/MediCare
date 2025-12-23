@@ -20,7 +20,20 @@ A comprehensive Django-based hospital appointment management system that enables
 - **Backend**: Django 5.2.9
 - **Database**: SQLite (Development) / PostgreSQL (Production)
 - **Frontend**: HTML5, CSS3, JavaScript
-- **Deployment**: Render
+- **Deployment**: PythonAnywhere
+
+---
+
+## 🌐 Live Demo
+
+**Website:** [https://omar559.pythonanywhere.com](https://omar559.pythonanywhere.com)
+
+### Demo Admin Account
+| Field | Value |
+|-------|-------|
+| **Username** | `Admin` |
+| **Email** | `admin@gmail.com` |
+| **Password** | `admin123456` |
 
 ---
 
@@ -162,15 +175,16 @@ MediCare/
 
 ## 🚀 Deployment
 
-This project is configured for deployment on Render. See `DEPLOYMENT.md` for detailed instructions.
+This project is deployed on **PythonAnywhere**.
 
-### Quick Deploy
-1. Push to GitHub
-2. Connect repository to Render
-3. Set environment variables:
-   - `SECRET_KEY`: Generate a secure key
-   - `DEBUG`: `False`
-   - `DATABASE_URL`: PostgreSQL connection string
+### Deployment Steps
+1. Create account on [pythonanywhere.com](https://www.pythonanywhere.com)
+2. Clone repository in Bash console
+3. Create virtualenv and install requirements
+4. Configure Web App with WSGI file
+5. Set up static files mapping
+
+See `DEPLOYMENT.md` for detailed instructions.
 
 ---
 
