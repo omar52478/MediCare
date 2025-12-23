@@ -144,12 +144,24 @@
         </div>
     </div>
 
-    <!-- Book Appointment Button for Patients -->
-    <div class="glass-card fade-in mt-3 text-center" style="animation-delay: 0.3s; padding: var(--space-xl);">
-        <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-calendar-plus"></i>
-            Book New Appointment
-        </a>
+    <!-- Book Appointment Button for Patients -->    <!-- Actions -->
+    <div class="glass-card fade-in mt-3" style="animation-delay: 0.3s; padding: var(--space-xl);">
+        <div class="d-flex gap-2 flex-wrap justify-center">
+            <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-calendar-plus"></i>
+                Book New Appointment
+            </a>
+            {% if user.is_superuser %}
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-tachometer-alt"></i>
+                Admin Dashboard
+            </a>
+            <a href="{% url 'admin:index' %}" target="_blank" class="btn btn-outline btn-lg">
+                <i class="fas fa-cogs"></i>
+                Django Admin
+            </a>
+            {% endif %}
+        </div>
     </div>
 
     <!-- My Appointments -->
